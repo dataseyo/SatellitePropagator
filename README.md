@@ -17,3 +17,5 @@ In /server, run the Flask application with python app.py.
 I'm integrating the unperturbed restricted 2 body equations of motion in order to propagate orbits given their current state at epoch, but adding in perturbations due to the obliquity of the Earth, solar radiation, and so on is in the works. 
 
 I'm also ignoring the fact that the Earth is best represented by a Spheroid, which means that the ground tracks being drawn will be some kilometers off and are best used as a mere visualization tool rather than as a scientific one. The third edition of the "Supplement to the Astronomical Almanac" goes over the steps that would be required in order to more precisely track the SSP (satellite sub-point) by computing the true height above spheroid at which a line between the satellite and Earth's center would intersect the surface. 
+
+Author: Zachary Shifrel
