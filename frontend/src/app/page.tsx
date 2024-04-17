@@ -4,11 +4,13 @@ import { Canvas } from '@react-three/fiber'
 import { Stars, OrbitControls } from '@react-three/drei';
 
 import Orbit from "@/scenes/physics/Orbit";
+import GroundTrack from '../components/GroundTrack/GroundTrack';
+import { ComposableMap, Geographies, Geography, Graticule } from "react-simple-maps"
 
 export default function Home() {
 
   return (
-    <main className="flex h-full min-h-screen flex-col items-center justify-center">
+    <div className="flex h-full min-h-screen w-full flex-col items-center justify-center">
       <div className="h-screen w-screen z-0">
         <Canvas
           camera={{
@@ -24,6 +26,16 @@ export default function Home() {
           <Orbit/>
         </Canvas>
       </div>
-    </main>
+      <GroundTrack />
+      {/* <ComposableMap projection="geoMercator">
+        <Geographies geography="/features.json">
+          {({ geographies }) =>
+            geographies.map((geo) => (
+              <Geography key={geo.rsmKey} geography={geo} />
+            ))
+          }
+        </Geographies>
+      </ComposableMap> */}
+    </div>
   );
 }

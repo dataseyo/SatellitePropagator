@@ -9,4 +9,5 @@ html {
   margin: 0;
   padding: 0;
   min-width: 420px;
+  overflow: hidden;
 }

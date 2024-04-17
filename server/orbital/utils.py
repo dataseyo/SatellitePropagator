@@ -19,3 +19,16 @@ def two_body_eom(t, y, mu):
     a = (- mu * r) / r_mag**3 
     res[3:] = a
     return res
+
+def handle_units(type):
+    # convert units to and from canonical and metric 
+    # note: to avoid hardcoded frontend scaling, should work in canonical (TU/DU) units.
+    pass
+
+def dcos(angle):
+    # takes in degrees and converts to rad to perform cosine
+    return np.cos(np.deg2rad(angle))
+
+def dsin(angle):
+    # takes in degrees and converts to rad to perform sine
+    return np.sin(np.deg2rad(angle))

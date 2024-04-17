@@ -1,15 +1,7 @@
 import numpy as np
 from scipy.integrate import solve_ivp
 import math
-from orbital.utils import inverse_kepler, two_body_eom
-
-def dcos(angle):
-    # takes in degrees and converts to rad to perform cosine
-    return np.cos(np.deg2rad(angle))
-
-def dsin(angle):
-    # takes in degrees and converts to rad to perform sine
-    return np.sin(np.deg2rad(angle))
+from orbital.utils import inverse_kepler, two_body_eom, dsin, dcos
 
 '''
 The Sat class takes in either the Keplerian elements or the state vector of a satellite in perifocal coordinates,

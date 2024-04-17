@@ -4,10 +4,10 @@ import { useFrame, useThree } from '@react-three/fiber'
 import { Sphere, useTexture, useHelper } from '@react-three/drei'
 import { useEffect, useState, useRef, useMemo } from 'react'
 import * as THREE from 'three'
-
 import { DirectionalLightHelper } from 'three';
-
 import { RefObject, forwardRef } from 'react'
+
+import useOrbitStore from '@/store/orbitstore'
 
 interface State {
     id: number
@@ -16,60 +16,32 @@ interface State {
     map?: THREE.Texture,
     scale?: "solar" | "sat", // scale down objects differently according to whether they're near earth satellites or celestial bodies
     size?: number,
-    speed?: number
+    speed?: number,
+    track: boolean
 }
 
 type Earth = RefObject<THREE.Mesh<THREE.BufferGeometry<THREE.NormalBufferAttributes>, THREE.Material | THREE.Material[], THREE.Object3DEventMap>>
 
-// a, e, i, O, w, F
-const testData: State[] = [
-    {
-        id: 1,
-        type: "element",
-        state: [8000, 0.1, 30, 145, 120, 10, 0]
-    },
-    {
-        id: 2,
-        type: "element",
-        state: [26600, .6418940, 64.2851, 137.5555, 271.9172, 21.0476]
-    },
-    {
-        id: 3,
-        type: "state",
-        state: [-820.865,-1905.95,-7445.9, -6.75764,-1.85916,0.930651],
-    },
-    {
-        id: 4,
-        type: "element",
-        state: [6798 , 0.00047, 51.6398, 18.4032, 66.3077, 18.4032]
-    },
-    {
-        id: 5,
-        type: "state",
-        state: [-1.879628542537870e5,  3.473462794543137e5, 3.556398887633426e4, -8.915671556736201e-1, -4.215831961891819e-1, -1.595210201459024e-2],
-        scale: "solar",
-        size: 2,
-        speed: .5
-    }, 
-]
+const Sat = forwardRef(({state, map, scale, type, size, speed, track}: State, ref: any) => {
+    // zustand store
+    const addTrack = useOrbitStore((state) => state.setTrack)
 
-const Sat = forwardRef(({state, map, scale, type, size, speed}: State, ref: any) => {
+    // state
     const [orbit, setOrbit] = useState<any>(null)
-    const [posInOrbit, setPosInOrbit] = useState(0)
     const [path, setPath] = useState<any>(null)
+    const [trackVisible, setTrackVisible] = useState<boolean>(false)
 
+    // refs and init
     const satRef = useRef<THREE.Mesh>(null)
-
     const satId = `${state[0]} ${state[1]}`
     const rayRef = useRef<THREE.Raycaster>(null)
-    const testRef = useRef<any>(null)
 
+    // scene
     const { scene } = useThree()
 
     // set scale and size and speed
     let scaleFactor = 800
     if (scale == "solar") {
-        console.log(scale)
         scaleFactor = 10000
     }
 
@@ -85,7 +57,7 @@ const Sat = forwardRef(({state, map, scale, type, size, speed}: State, ref: any)
 
     useEffect(() => {
         const fetchOrbit = () => {
-            fetch('http://127.0.0.1:8080/orbit', {
+            fetch('http://10.0.0.3:8080/orbit', {
                 body: JSON.stringify({state: state, type: type}),
                 method: "POST",
                 headers: {
@@ -106,7 +78,7 @@ const Sat = forwardRef(({state, map, scale, type, size, speed}: State, ref: any)
     useEffect(() => {
         if (orbit) {
             const curvePoints = []
-            console.log(JSON.parse(orbit.state))
+            // console.log(JSON.parse(orbit.state))
             const r = JSON.parse(orbit.state).r
             for (let i = 0; i < r.length; i++) {
                 curvePoints.push(new THREE.Vector3(r[i][0] / scaleFactor, r[i][1] / scaleFactor, r[i][2] / scaleFactor))
@@ -140,7 +112,7 @@ const Sat = forwardRef(({state, map, scale, type, size, speed}: State, ref: any)
             let point = path.getPoint(t)
             satRef.current && satRef.current.position.set(point.x, point.y, point.z)
 
-            if (rayRef.current && satRef.current && testRef.current) {
+            if (rayRef.current && satRef.current) {
                 // let dirToOrigin = new THREE.Vector3(0, 0, 0)
                 let satPos = satRef.current.position
                 let neg = new THREE.Vector3(-satPos.x, -satPos.y, -satPos.z)
@@ -151,14 +123,20 @@ const Sat = forwardRef(({state, map, scale, type, size, speed}: State, ref: any)
                 // let arrowHelper = new THREE.ArrowHelper(neg, satPos, 10, "red")
                 // scene.add(arrowHelper)
 
-                let intersection = rayRef.current.intersectObject(testRef.current, false)[0].point
-                let normedInt = intersection.normalize()
+                if (track) {
+                    // get intersection of ray between satellite and Earth center
+                    let intersection = rayRef.current.intersectObject(ref.current, false)[0].point
 
-                let norm = 3
-                let long = Math.atan2(normedInt.x, normedInt.z) * 180 / Math.PI
-                let lat = Math.asin(normedInt.y) * 180 / Math.PI
-                // console.log(lat, long)
-                // console.log(intersection)
+                    // convert to local coordinates
+                    let localIntersection = ref.current.worldToLocal(intersection)
+                    
+                    let normedLocalInt = localIntersection.normalize()
+                    let normedInt = intersection.normalize()
+                    let long = Math.atan2(normedLocalInt.x, normedLocalInt.z) * 180 / Math.PI
+                    let lat = Math.asin(normedLocalInt.y) * 180 / Math.PI
+                    // console.log(long, lat)
+                    addTrack([long, lat])
+                }
             }
         }
     })
@@ -166,10 +144,9 @@ const Sat = forwardRef(({state, map, scale, type, size, speed}: State, ref: any)
     return (
         <group>
             <raycaster ref={rayRef}/>
-            <Sphere args={[3]} visible={false} ref={testRef}></Sphere>
             <mesh position={[0, 3, 0]} ref={satRef} >
                 <sphereGeometry args={[objSize]}/>
-                <meshStandardMaterial map={map}/>
+                <meshStandardMaterial map={map} color={track ? "red" : ""}/>
             </mesh>
         </group>
     )
@@ -177,25 +154,30 @@ const Sat = forwardRef(({state, map, scale, type, size, speed}: State, ref: any)
 
 const Orbit = () => {
     const [orbits, setOrbits] = useState<State[]>([
+        // dummy data for now : a, e, i, O, w, F
         {
             id: 1,
             type: "element",
-            state: [8000, 0.1, 30, 145, 120, 10, 0]
+            state: [8000, 0.1, 30, 145, 120, 10, 0],
+            track: false
         },
         {
             id: 2,
             type: "element",
-            state: [26600, .6418940, 64.2851, 137.5555, 271.9172, 21.0476]
+            state: [26600, .6418940, 64.2851, 137.5555, 271.9172, 21.0476],
+            track: true
         },
         {
             id: 3,
             type: "state",
             state: [-820.865,-1905.95,-7445.9, -6.75764,-1.85916,0.930651],
+            track: false
         },
         {
             id: 4,
             type: "element",
-            state: [6798 , 0.00047, 51.6398, 18.4032, 66.3077, 18.4032]
+            state: [6798 , 0.00047, 51.6398, 18.4032, 66.3077, 18.4032],
+            track: false
         },
         {
             id: 5,
@@ -203,8 +185,15 @@ const Orbit = () => {
             state: [-1.879628542537870e5,  3.473462794543137e5, 3.556398887633426e4, -8.915671556736201e-1, -4.215831961891819e-1, -1.595210201459024e-2],
             scale: "solar",
             size: 2,
-            speed: .5
+            speed: .5,
+            track: false
         }, 
+        {
+            id: 6,
+            type: "element",
+            state: [6498 , 0.00047, 89.0, 18.4032, 66.3077, 18.4032],
+            track: false
+        },
     ])
 
     const dirLight = useRef<any>()
@@ -216,10 +205,11 @@ const Orbit = () => {
     useFrame((state, delta) => {
         // rotate earth
         if (earthRef.current) {
-            earthRef.current.rotation.y += delta / Math.PI
+            earthRef.current.rotation.y += (delta / Math.PI ) / 2
+            // console.log(earthRef.current.worldToLocal)
         }
     })
-
+    
     return (
         <group>
             <directionalLight position={[0, 20, 5]} intensity={5} color={"white"} ref={dirLight}/>
@@ -232,7 +222,7 @@ const Orbit = () => {
             {/* Orbits */}
             {
                 orbits?.map((orbit) => (
-                    <Sat key={orbit.id} {...orbit} ref={earthRef}/>
+                    <Sat key={orbit.id} {...orbit} ref={earthRef} map={orbit.id === 5 ? moonTexture : undefined}/>
                 ))
             }
         </group>
