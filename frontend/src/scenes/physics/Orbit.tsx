@@ -106,11 +106,15 @@ const Sat = forwardRef(({state, map, scale, type, size, speed, track}: State, re
 
     let t = 0.001
 
+    let spherical = new THREE.Spherical()
     useFrame((state, delta) => {
         if (orbit && path) {
             t += 0.005 * objSpeed
             let point = path.getPoint(t)
             satRef.current && satRef.current.position.set(point.x, point.y, point.z)
+
+
+      
 
             if (rayRef.current && satRef.current) {
                 // let dirToOrigin = new THREE.Vector3(0, 0, 0)
@@ -123,18 +127,35 @@ const Sat = forwardRef(({state, map, scale, type, size, speed, track}: State, re
                 // let arrowHelper = new THREE.ArrowHelper(neg, satPos, 10, "red")
                 // scene.add(arrowHelper)
 
-                if (track) {
+                if (track ) {
                     // get intersection of ray between satellite and Earth center
                     let intersection = rayRef.current.intersectObject(ref.current, false)[0].point
+                    // intersection.x + 5
+                    // let axis = new THREE.Vector3(1, 0, 0)
+                    // let angle = - Math.PI / 2
+                    // intersection.applyAxisAngle(axis, angle)
+                    let normedInt = intersection.normalize()
 
                     // convert to local coordinates
-                    let localIntersection = ref.current.worldToLocal(intersection)
+                    let localIntersection = ref.current.worldToLocal(normedInt)
                     
-                    let normedLocalInt = localIntersection.normalize()
-                    let normedInt = intersection.normalize()
-                    let long = Math.atan2(normedLocalInt.x, normedLocalInt.z) * 180 / Math.PI
-                    let lat = Math.asin(normedLocalInt.y) * 180 / Math.PI
+                    // let normedLocalInt = localIntersection.normalize()
+                    // let normedInt = intersection.normalize()
+                    let long = Math.atan2(localIntersection.y, localIntersection.z) * 180 / Math.PI
+                    let lat = Math.asin(localIntersection.x) * 180 / Math.PI
                     // console.log(long, lat)
+                    // addTrack([long, lat])
+                }
+
+                // attempt 2 ground track
+                if (track) {
+                    let localIntersection = ref?.current.worldToLocal(point)
+                    spherical.setFromVector3(localIntersection)
+
+                    let lat = THREE.MathUtils.radToDeg(Math.PI / 2 - spherical.phi)
+                    let long = THREE.MathUtils.radToDeg(spherical.theta)
+                    long = long - 90
+                    console.log(lat, long)
                     addTrack([long, lat])
                 }
             }
@@ -165,7 +186,8 @@ const Orbit = () => {
             id: 2,
             type: "element",
             state: [26600, .6418940, 64.2851, 137.5555, 271.9172, 21.0476],
-            track: true
+            track: true,
+            speed: .08
         },
         {
             id: 3,
@@ -192,8 +214,16 @@ const Orbit = () => {
             id: 6,
             type: "element",
             state: [6498 , 0.00047, 89.0, 18.4032, 66.3077, 18.4032],
-            track: false
+            track: false,
+            speed: .5
         },
+        {
+            id: 7,
+            type: "element",
+            state: [35793, 0, .01, 1, 1, 1],
+            track: false,
+            speed: .08
+        }
     ])
 
     const dirLight = useRef<any>()
@@ -205,17 +235,54 @@ const Orbit = () => {
     useFrame((state, delta) => {
         // rotate earth
         if (earthRef.current) {
-            earthRef.current.rotation.y += (delta / Math.PI ) / 2
+            earthRef.current.rotation.y += (delta / Math.PI ) / 4
             // console.log(earthRef.current.worldToLocal)
         }
     })
-    
+
+    // if (earthRef.current) {
+    //     console.log("rotating")
+    //     earthRef.current.geometry.rotateZ(Math.PI/4)
+    // }
+
+    // useEffect(() => {
+    //     console.log('earth ref')
+    //     earthRef.current?.geometry.rotateY(Math.PI/3)
+    // }, [earthRef])
+
+    const testLatLong = (point: THREE.Vector3) => {
+        console.log(point)
+        // let normedInt = point.normalize()
+        if (earthRef.current) {
+            let localIntersection = earthRef?.current.worldToLocal(point)
+            let spherical = new THREE.Spherical()
+            spherical.setFromVector3(localIntersection)
+            console.log(spherical)
+            let lat = THREE.MathUtils.radToDeg(Math.PI / 2 - spherical.phi)
+            let long = THREE.MathUtils.radToDeg(spherical.theta)
+            long = long - 90
+            console.log(lat, long)
+            // let long = Math.atan2(localIntersection.y, localIntersection.z) * 180 / Math.PI
+            // let lat = Math.asin(localIntersection.x) * 180 / Math.PI
+            // console.log(long, lat)
+        }
+   
+    }
+
+    let euler = new THREE.Euler(0, 1, 0)
     return (
         <group>
             <directionalLight position={[0, 20, 5]} intensity={5} color={"white"} ref={dirLight}/>
 
             {/* Earth */}
-            <Sphere args={[5]} ref={earthRef} rotation-x={Math.PI/2}>
+            {/* <mesh ref={earthRef}>
+                <sphereGeometry args={[5, 64, 32]}/>
+                <meshStandardMaterial color="white" map={earthTexture}/>
+            </mesh> */}
+            <Sphere 
+                onClick={(intersection) => testLatLong(intersection.point)}
+            
+            args={[5, 64, 32]} ref={earthRef} rotation-x={Math.PI/2}>
                 <meshStandardMaterial color="white" map={earthTexture}/>
             </Sphere>
 
