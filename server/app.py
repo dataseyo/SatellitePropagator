@@ -1,7 +1,6 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS, cross_origin
 import numpy as np
-import pandas as pd
 from json import JSONEncoder
 import json
 
