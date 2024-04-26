@@ -20,10 +20,15 @@ export default function Home() {
         >
           {/* CONFIG */}
           <color attach="background" args={["black"]}/>
-          <OrbitControls rotation={[0, 2 * Math.PI, 0]} position={[100, -10, 0]}/>
+          <OrbitControls 
+            rotation={[0, 2 * Math.PI, 0]} 
+            position={[100, -10, 0]}
+            minDistance={20}
+            maxDistance={500}
+          />
           <Stars count={5000} radius={200}/>
           <ambientLight intensity={Math.PI / 8}/>
-          <axesHelper args={[10]}/>
+          {/* <axesHelper args={[10]}/> */}
 
           {/* SCENE */}
           <Orbit/>

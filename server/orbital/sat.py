@@ -65,7 +65,6 @@ class Sat():
             f = 360 - np.rad2deg(np.arccos(np.dot(e, r) / (e_mag*r_mag)))
         return [a, e_mag, i, O , w, f]
     
-
     def elem_to_state(self, type):
         '''
         Converts Keplerian orbital elements into a state vector represented in { type } coordinates.
@@ -84,10 +83,11 @@ class Sat():
         w = self.elements[4]
         F = self.elements[5]
 
-            # compute initial constants
+        # compute initial constants
+        # run inverse Kepler if evolving the orbital elements
         #     nu = np.sqrt(mu / a**3)
         #     M_0 = np.deg2rad(10)
-        #     #   M_t = M_0 + nu * dt
+        #     M_t = M_0 + nu * dt
         #     E = inverse_kepler(M_0, e, 10)
 
         #     # compute true anomaly
@@ -127,6 +127,7 @@ class Sat():
             return np.hstack([r.T.tolist()[0], v.T.tolist()[0]])
     
     def ECI_to_ECF(self):
+        # rotation matrices from ECI to ECEF
         pass
   
     def print_elements(self):
@@ -165,7 +166,5 @@ class Sat():
                 - find geodetic latitude and longitude
                 - find height of satellite above reference ellipsoid
         '''
-
-
         track = []
         return track

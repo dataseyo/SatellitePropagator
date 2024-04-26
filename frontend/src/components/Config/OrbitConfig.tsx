@@ -1,11 +1,19 @@
 // Menu to interact with orbit simulator
 import { IoIosAddCircle } from "react-icons/io";
 import { IoInformationCircle } from "react-icons/io5";
+import { FormEvent, useState } from "react";
+import { v4 } from "uuid";
 
-import { useState } from "react";
+import useOrbitStore from '@/store/orbitstore'
+import { State } from "@/types/types";
 
 type OrbitInput = {
-
+    x: number,
+    y: number,
+    z: number,
+    v_x: number,
+    v_y: number,
+    v_z: number
 }
 
 const conditionalPlaceholder = (placeOne: string, placeTwo: string) => {
@@ -13,19 +21,85 @@ const conditionalPlaceholder = (placeOne: string, placeTwo: string) => {
 }
 
 const OrbitConfig = () => {
-    const [checked, setChecked] = useState(true)
+    const addOrbit = useOrbitStore((state) => state.addOrbit)
+        
+    const [checked, setChecked] = useState(false)
     const [orbitInput, setOrbitInput] = useState({
-        state: [],
+        state: {
+            x: 0,
+            y: 0,
+            z: 0,
+            v_x: 0,
+            v_y: 0,
+            v_z: 0
+        },
+        element: {
+            a: 0,
+            e: 0,
+            i: 0,
+            O: 0,
+            w: 0,
+            F: 0
+        }
     })
 
-    const updateInput = () => {
+    const toggleInputType = () => {
+        setOrbitInput({
+            state: {
+                x: 0,
+                y: 0,
+                z: 0,
+                v_x: 0,
+                v_y: 0,
+                v_z: 0
+            },
+            element: {
+                a: 0,
+                e: 0,
+                i: 0,
+                O: 0,
+                w: 0,
+                F: 0
+            }
+        })
 
+        setChecked(prevChecked => !prevChecked)
     }
 
-    const toggleInputType = () => {
-        console.log("toggle")
-        setOrbitInput({state: []})
-        setChecked(prevChecked => !prevChecked)
+    const updateStateInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setOrbitInput(prevOrbitInput => ({
+            ...prevOrbitInput,
+            state: {
+                ...prevOrbitInput.state,
+                [e.target.name]: e.target.value
+            }
+        }))
+    }
+
+    const updateElementInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setOrbitInput(prevOrbitInput => ({
+            ...prevOrbitInput,
+            element: {
+                ...prevOrbitInput.element,
+                [e.target.name]: e.target.value
+            }
+        }))
+    }
+
+    const onSubmit = (e: FormEvent) => {
+        e.preventDefault()
+
+        let data = Object.values(checked ? orbitInput.state : orbitInput.element)
+        data = data.map(d => { return parseFloat(d)})
+        console.log(data)
+        let newOrbit: State = {
+            id: 10,
+            type: checked ? "state" : "element",
+            state: data,
+            track: false,
+        }
+
+        addOrbit(newOrbit)
     }
     
     return (
@@ -52,44 +126,48 @@ const OrbitConfig = () => {
                 </div>
 
                 {/* State or Elements */}
-                <form className="">
+                {/* to-do: check that it's an elliptical orbit */}
+                <form className="" onSubmit={onSubmit}>
                     {checked ?
                         // States
                         <div className="flex flex-col">
                             <div className="flex flex-row items-center justify-between my-2 mx-2">
-                                <input placeholder="x" type="number" className="input input-bordered w-1/3 mr-2"/>
-                                <input placeholder="y" type="number" className="input input-bordered w-1/3 mr-2"/>
-                                <input placeholder="z" type="number" className="input input-bordered w-1/3"/>
+                                <input required={true} name="x" value={orbitInput.state.x || ""} onChange={(e) => updateStateInput(e)} placeholder="x" type="number" className="input input-bordered w-1/3 mr-2"/>
+                                <input required={true} name="y" value={orbitInput.state.y || ""} onChange={(e) => updateStateInput(e)} placeholder="y" type="number" className="input input-bordered w-1/3 mr-2"/>
+                                <input required={true} name="z" value={orbitInput.state.z || ""} onChange={(e) => updateStateInput(e)} placeholder="z" type="number" className="input input-bordered w-1/3"/>
                             </div>
                             <div className="flex flex-row items-center justify-between my-2 mx-2">
-                                <input placeholder="v_x" type="number" className="input input-bordered w-1/3 mr-2"/>
-                                <input placeholder="v_y" type="number" className="input input-bordered w-1/3 mr-2"/>
-                                <input placeholder="v_z" type="number" className="input input-bordered w-1/3"/>
+                                <input required={true} name="v_x" value={orbitInput.state.v_x || ""} onChange={(e) => updateStateInput(e)} placeholder="v_x" type="number" className="input input-bordered w-1/3 mr-2"/>
+                                <input required={true} name="v_y" value={orbitInput.state.v_y || ""} onChange={(e) => updateStateInput(e)} placeholder="v_y" type="number" className="input input-bordered w-1/3 mr-2"/>
+                                <input required={true} name="v_z" value={orbitInput.state.v_z || ""} onChange={(e) => updateStateInput(e)} placeholder="v_z" type="number" className="input input-bordered w-1/3"/>
                             </div>
                         </div>
                         :
                         // Elements
                         <div className="flex flex-col">
                             <div className="flex flex-row items-center justify-between my-2 mx-2">
-                                <input placeholder={conditionalPlaceholder("a", "semimajor axis")} type="number" className="input input-bordered w-1/3 mr-2"/>
-                                <input placeholder={conditionalPlaceholder("e", "eccentricity")} type="number" className="input input-bordered w-1/3 mr-2"/>
-                                <input placeholder={conditionalPlaceholder("i", "inclination")} type="number" className="input input-bordered w-1/3"/>
+                                <input required={true} name="a" value={orbitInput.element.a || ""} onChange={(e) => updateElementInput(e)} placeholder={conditionalPlaceholder("a", "semimajor axis")} type="number" className="input input-bordered w-1/3 mr-2"/>
+                                <input required={true} name="e" value={orbitInput.element.e || ""} onChange={(e) => updateElementInput(e)} placeholder={conditionalPlaceholder("e", "eccentricity")} type="number" className="input input-bordered w-1/3 mr-2"/>
+                                <input required={true} name="i" value={orbitInput.element.i || ""} onChange={(e) => updateElementInput(e)} placeholder={conditionalPlaceholder("i", "inclination")} type="number" className="input input-bordered w-1/3"/>
                             </div>
                             <div className="flex flex-row items-center justify-between my-2 mx-2">
-                                <input placeholder={"RAAN"} type="number" className="input input-bordered w-1/3 mr-2"/>
-                                <input placeholder={conditionalPlaceholder("w", "arg of perigee")} type="number" className="input input-bordered w-1/3 mr-2"/>
-                                <input placeholder={conditionalPlaceholder("F", "true anomaly")} type="number" className="input input-bordered w-1/3"/>
+                                <input required={true} name="O" value={orbitInput.element.O || ""} onChange={(e) => updateElementInput(e)} placeholder={"RAAN"} type="number" className="input input-bordered w-1/3 mr-2"/>
+                                <input required={true} name="w" value={orbitInput.element.w || ""} onChange={(e) => updateElementInput(e)} placeholder={conditionalPlaceholder("w", "arg of perigee")} type="number" className="input input-bordered w-1/3 mr-2"/>
+                                <input required={true} name="F" value={orbitInput.element.F || ""} onChange={(e) => updateElementInput(e)} placeholder={conditionalPlaceholder("F", "true anomaly")} type="number" className="input input-bordered w-1/3"/>
                             </div>
                         </div>
                     }
+                
+                <button type="submit">
+                    <IoIosAddCircle 
+                        size={32} 
+                        className="absolute text-white-100 bottom-2 right-2 hover:text-blue-500 hover:cursor-pointer"
+                    />
+                </button>
                 </form>
 
-                <IoIosAddCircle 
-                    size={32} 
-                    className="absolute text-white-100 bottom-2 right-2 hover:text-blue-500 hover:cursor-pointer"
-                />
 
-                {/* Orbit Modifier - clear, delete */}
+            {/* Orbit Modifier - clear, delete */}
             </div>
 
             {/* Config Bottom Bar */}

@@ -19,6 +19,7 @@ class NumpyArrayEncoder(JSONEncoder):
 def parse_state(data):
     state = data.get("state")
     type = data.get("type")
+    print(state, type)
     if type == "element":
         # print("getting element with", state)
         sat = Sat(elements=state)
@@ -46,5 +47,5 @@ def get_orbit():
     return jsonify({"state": data})
 
 if __name__== "__main__":
-    app.run(host="10.0.0.3", debug=False, port=8080)
+    app.run(host="10.0.0.7", debug=False, port=8080)
 

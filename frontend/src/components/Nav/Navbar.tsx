@@ -64,6 +64,7 @@ export default function Navbar() {
     const toggleMenu = () => {
         setOpen(prevOpen => !prevOpen)
     }
+    
     return (
         <motion.div 
             className="absolute flex-col top-4 h-20 outline outline-white-500/30 outline-1 opacity-85 bg-black-700 w-52 md:w-1/2 min-w-60 z-10 backdrop-blur-md p-0 rounded-lg"
