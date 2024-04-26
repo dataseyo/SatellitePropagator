@@ -94,12 +94,12 @@ const useOrbitStore = create<OrbitState>()((set, get) => ({
         }))
     },
     resetOrbits: () => {
-        set((state) => ({
+        set(() => ({
             orbits: []
         }))
     },
     reInitOrbits: () => {
-        set((state) => ({
+        set(() => ({
             orbits: init_orbits
         }))
     }

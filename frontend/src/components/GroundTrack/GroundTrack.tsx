@@ -12,22 +12,38 @@ import * as d3 from 'd3'
 const GroundTrack = () => {
     // type of map projection
     const [type, setType] = useState("")
+    const [mapProjection, setMapProjection] = useState<string>("geoEqualEarth")
+    const [test, setTest] = useState(true)
+
+    useEffect(() => {
+
+    }, [])
     
     // zustand store getter
-    let tracks = useOrbitStore((state) => state.track)
-    if (tracks.length > 20000) {
-        tracks.splice(0, 5)
+    let { track } = useOrbitStore((state) => state)
+
+    if (track.length > 17000) {
+        track.splice(0, 5)
     } 
-    
+
     return (
-        <div className="absolute right-4 bottom-0 z-10 w-1/2">
+        <div className="absolute flex flex-col right-4 bottom-0 z-10 w-1/2 md:w-2/5">
+            <select 
+                className="select border-white-100 focus:border-blue-500 text-white-100 opacity-85 bg-black-700 dark relative self-end select-xs -mb-4 select-bordered bg-transparent" 
+                onChange={(e) => setMapProjection(e.target.value)}
+            >
+                <option value="geoEqualEarth" className="text-white-100 opacity-85 bg-black-700">Equal Earth</option>
+                <option value="geoAzimuthalEquidistant" className="text-white-100 opacity-85 bg-black-700">Azimuthal</option>
+                <option value="geoConicEquidistant" className="text-white-100 opacity-85 bg-black-700">Conic</option>
+            </select>
             <ComposableMap 
                 // width={100}
                 // height={50}
                 fill="white" 
-                // projection={projection}
-                projection="geoEqualEarth"
-                projectionConfig={{center: [0, 45], scale: 125}}
+                // className=""
+                // projections:
+                projection={mapProjection}
+                // projectionConfig={{center: [0, 45], scale: 125}}
             >
                 <Geographies geography="/features.json">
                 {({ geographies }) =>
@@ -39,7 +55,7 @@ const GroundTrack = () => {
 
                 {/* Ground Track Line(s) */}
                 <Line
-                    coordinates={tracks.map((t, index) => [t[0], t[1]])}
+                    coordinates={track.map((t, index) => [t[0], t[1]])}
                     stroke="red"
                     strokeWidth={4}
                 />

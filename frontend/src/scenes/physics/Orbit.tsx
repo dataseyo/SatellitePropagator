@@ -159,7 +159,6 @@ const Sat = forwardRef(({state, map, scale, type, size, speed, track, arrows}: S
 const Orbit = () => {
     // get orbits from store
     const zOrbits = useOrbitStore((state) => state.orbits)
-    console.log(zOrbits)
 
     const dirLight = useRef<any>()
     // useHelper(dirLight, DirectionalLightHelper, 4, "red")

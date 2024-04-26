@@ -2,7 +2,6 @@
 import { IoIosAddCircle } from "react-icons/io";
 import { IoInformationCircle } from "react-icons/io5";
 import { FormEvent, useState } from "react";
-import { v4 } from "uuid";
 
 import useOrbitStore from '@/store/orbitstore'
 import { State } from "@/types/types";
@@ -91,12 +90,11 @@ const OrbitConfig = () => {
 
         let data = Object.values(checked ? orbitInput.state : orbitInput.element)
         data = data.map(d => { return parseFloat(d)})
-        console.log(data)
         let newOrbit: State = {
             id: 10,
             type: checked ? "state" : "element",
             state: data,
-            track: false,
+            track: true,
         }
 
         addOrbit(newOrbit)
@@ -175,15 +173,15 @@ const OrbitConfig = () => {
                 <h3 className="text-white-100 font-bold ml-2 text-xl mr-2">Config</h3>
                 {/* Modify Orbits */}
                 <div className="flex flex-row mx-4 mt-3 justify-between">
-                    <button className="btn w-1/3 btn-outline outline-green-500 mr-2 md:w-1/4 lg:w-1/5">
+                    <button className="btn w-1/3 btn-outline mr-2 md:w-1/4 lg:w-1/5">
                         Tracks
                     </button>
 
-                    <button className="btn w-1/3 btn-outline outline-green-500 mr-2 md:w-1/4 lg:w-1/5">
+                    <button className="btn w-1/3 btn-outline mr-2 md:w-1/4 lg:w-1/5">
                         Clear
                     </button>
 
-                    <button className="btn w-1/3 btn-outline btn-green mr-2 md:w-1/4 lg:w-1/5">
+                    <button className="btn w-1/3 btn-outline mr-2 md:w-1/4 lg:w-1/5">
                         Elements
                     </button>
                 </div>
