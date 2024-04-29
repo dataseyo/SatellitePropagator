@@ -4,15 +4,13 @@ import { useFrame, useThree } from '@react-three/fiber'
 import { Sphere, useTexture, useHelper } from '@react-three/drei'
 import { useEffect, useState, useRef, useMemo } from 'react'
 import * as THREE from 'three'
-import { DirectionalLightHelper } from 'three';
-import { RefObject, forwardRef } from 'react'
+// import { DirectionalLightHelper } from 'three';
+import { forwardRef } from 'react'
 
 import useOrbitStore from '@/store/orbitstore'
 import { State } from '@/types/types'
 
-type Earth = RefObject<THREE.Mesh<THREE.BufferGeometry<THREE.NormalBufferAttributes>, THREE.Material | THREE.Material[], THREE.Object3DEventMap>>
-
-const Sat = forwardRef(({state, map, scale, type, size, speed, track, arrows}: State, ref: any) => {
+const Sat = forwardRef( function Sat({state, map, scale, type, size, speed, trackDraw, arrows}: State, ref: any) {
     // zustand store
     const addTrack = useOrbitStore((state) => state.setTrack)
 
@@ -35,7 +33,7 @@ const Sat = forwardRef(({state, map, scale, type, size, speed, track, arrows}: S
         scaleFactor = 5000
     }
 
-    let objSize = .35
+    let objSize = .065
     if (size) {
         objSize = size
     }
@@ -47,7 +45,7 @@ const Sat = forwardRef(({state, map, scale, type, size, speed, track, arrows}: S
 
     useEffect(() => {
         const fetchOrbit = () => {
-            fetch('http://10.0.0.7:8080/orbit', {
+            fetch('http://localhost:5000/orbit', {
                 body: JSON.stringify({state: state, type: type}),
                 method: "POST",
                 headers: {
@@ -62,7 +60,7 @@ const Sat = forwardRef(({state, map, scale, type, size, speed, track, arrows}: S
         }
 
         const data = fetchOrbit()
-        setOrbit(data)
+        setOrbit(data) 
     }, [])
     
     useEffect(() => {
@@ -70,7 +68,7 @@ const Sat = forwardRef(({state, map, scale, type, size, speed, track, arrows}: S
             const curvePoints = []
             const r = JSON.parse(orbit.state).r
             for (let i = 0; i < r.length; i++) {
-                curvePoints.push(new THREE.Vector3(r[i][0] / scaleFactor, r[i][1] / scaleFactor, r[i][2] / scaleFactor))
+                curvePoints.push(new THREE.Vector3(r[i][0], r[i][1], r[i][2]))
             }
 
             // construct curve
@@ -98,7 +96,7 @@ const Sat = forwardRef(({state, map, scale, type, size, speed, track, arrows}: S
     let spherical = new THREE.Spherical()
     useFrame((state, delta) => {
         if (orbit && path) {
-            t += 0.001 * objSpeed
+            t += .1 * delta // * objSpeed
             let point = path.getPoint(t)
             satRef.current && satRef.current.position.set(point.x, point.y, point.z)
 
@@ -115,9 +113,8 @@ const Sat = forwardRef(({state, map, scale, type, size, speed, track, arrows}: S
                     scene.add(arrowHelper)
                 }
             
-
                 // attempt 2 ground track
-                if (track) {
+                if (trackDraw) {
                     let localIntersection = ref?.current.worldToLocal(point)
                     spherical.setFromVector3(localIntersection)
 
@@ -134,7 +131,7 @@ const Sat = forwardRef(({state, map, scale, type, size, speed, track, arrows}: S
     const colorRender = () => {
         if (map) {
             return ""
-        } else if (track) {
+        } else if (trackDraw) {
             return "red"
         } 
         return "palegreen"
@@ -156,7 +153,7 @@ const Sat = forwardRef(({state, map, scale, type, size, speed, track, arrows}: S
     )
 })
 
-const Orbit = () => {
+function Orbit() {
     // get orbits from store
     const zOrbits = useOrbitStore((state) => state.orbits)
 
@@ -166,28 +163,31 @@ const Orbit = () => {
     const moonTexture = useTexture('/moon.jpeg')
     const earthRef = useRef<THREE.Mesh>(null)
 
+    const earthRotation = ((Math.PI * 2) / (60 * 60 * 24)) / .0000729 
+
     useFrame((state, delta) => {
         // rotate earth
+        const time = state.clock.getElapsedTime()
+
         if (earthRef.current) {
-            earthRef.current.rotation.y += (delta / Math.PI ) / 4
-            // console.log(earthRef.current.worldToLocal)
+            earthRef.current.rotation.y += earthRotation * delta
         }
     })
 
-    let euler = new THREE.Euler(0, 1, 0)
     return (
         <group>
             <directionalLight position={[0, 20, 5]} intensity={5} color={"white"} ref={dirLight}/>
 
             {/* Earth */}
-            <Sphere args={[5, 64, 32]} ref={earthRef} rotation-x={Math.PI/2}>
+            <Sphere args={[.8, 64, 32]} ref={earthRef} rotation-x={Math.PI/2}>
                 <meshStandardMaterial color="white" map={earthTexture}/>
             </Sphere>
 
             {/* Orbits */}
             {
                 zOrbits?.map((orbit) => (
-                    <Sat key={orbit.id} {...orbit} ref={earthRef} map={orbit.id === 5 ? moonTexture : undefined}/>
+                    <Sat key={orbit.id} {...orbit} ref={earthRef}/>
+                    // <Sat key={orbit.id} {...orbit} ref={earthRef} map={orbit.id === 5 ? moonTexture : undefined}/>
                 ))
             }
         </group>

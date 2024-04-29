@@ -1,28 +1,22 @@
 "use client"
 
 import { ComposableMap, Geographies, Geography, Line } from "react-simple-maps"
-import { useState, useRef, useEffect } from "react"
+import { useState } from "react"
 
 // import { geoEquirectangular } from 'd3-geo'
 
 import useOrbitStore from "@/store/orbitstore"
-import useInterval from "@/hooks/useInterval"
-import * as d3 from 'd3'
 
 const GroundTrack = () => {
     // type of map projection
     const [type, setType] = useState("")
     const [mapProjection, setMapProjection] = useState<string>("geoEqualEarth")
     const [test, setTest] = useState(true)
-
-    useEffect(() => {
-
-    }, [])
     
     // zustand store getter
     let { track } = useOrbitStore((state) => state)
 
-    if (track.length > 17000) {
+    if (track.length > 10000) {
         track.splice(0, 5)
     } 
 

@@ -20,10 +20,19 @@ def two_body_eom(t, y, mu):
     res[3:] = a
     return res
 
-def handle_units(type):
+def handle_units(type, quantity, arr):
     # convert units to and from canonical and metric 
     # note: to avoid hardcoded frontend scaling, should work in canonical (TU/DU) units.
-    pass
+    if type == "canonical":
+        if quantity == "r":
+            return arr / 6378.136
+        if quantity == "v":
+            return arr / 7.90536828
+    if type == "metric":
+        if quantity == "r":
+            return arr * 6378.136
+        if quantity == "v":
+            return arr * 7.90536828
 
 def dcos(angle):
     # takes in degrees and converts to rad to perform cosine

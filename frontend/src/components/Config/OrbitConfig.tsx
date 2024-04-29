@@ -16,7 +16,11 @@ type OrbitInput = {
 }
 
 const conditionalPlaceholder = (placeOne: string, placeTwo: string) => {
-    return window.innerWidth < 1000 ? placeOne : placeTwo
+    if (window) {
+        return window.innerWidth < 1000 ? placeOne : placeTwo
+    }
+
+    return placeOne
 }
 
 const OrbitConfig = () => {
@@ -89,12 +93,12 @@ const OrbitConfig = () => {
         e.preventDefault()
 
         let data = Object.values(checked ? orbitInput.state : orbitInput.element)
-        data = data.map(d => { return parseFloat(d)})
+        data = data.map(d => typeof d === 'string' ? parseFloat(d) : d)
         let newOrbit: State = {
             id: 10,
             type: checked ? "state" : "element",
             state: data,
-            track: true,
+            trackDraw: false,
         }
 
         addOrbit(newOrbit)

@@ -5,6 +5,7 @@ from json import JSONEncoder
 import json
 
 from orbital.sat import Sat
+from orbital.utils import handle_units
 
 app = Flask(__name__)
 cors = CORS(app)
@@ -26,6 +27,8 @@ def parse_state(data):
         period_elem = sat.get_period()
         print("period", period_elem)
         r, v = sat.evolve_state(period_elem)
+        r = handle_units("canonical", "r", r)
+        v = handle_units("canonical", "v", v)
         res = {"r": r, "v": v}
         res = json.dumps(res, cls=NumpyArrayEncoder)
         return res
@@ -42,10 +45,14 @@ def parse_state(data):
 @cross_origin()
 def get_orbit():
     request_data = request.get_json()
-    state_vector = request_data.get("state")
     data = parse_state(request_data)
     return jsonify({"state": data})
 
+@app.route("/", methods=["GET"])
+@cross_origin()
+def greet():
+    return "Hi! This is an astrodynamics flask server."
+
 if __name__== "__main__":
-    app.run(host="10.0.0.7", debug=False, port=8080)
+    app.run(host="0.0.0.0", debug=False)
 

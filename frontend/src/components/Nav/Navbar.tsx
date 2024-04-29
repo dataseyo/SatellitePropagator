@@ -6,6 +6,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { useState } from "react";
 
 import OrbitConfig from "../Config/OrbitConfig";
+import { useWindowSize } from "@/hooks/useWindowSize";
 
 type MenuButtonProps = {
     children?: JSX.Element | React.ReactNode,
@@ -25,6 +26,7 @@ const MenuButton = ({children, onClick}: MenuButtonProps) => {
 
 export default function Navbar() {
     const [open, setOpen] = useState<boolean>(false)
+    let windowSize = useWindowSize()
 
     const menu = {
         closed: {
@@ -38,7 +40,7 @@ export default function Navbar() {
         },
         open: {
             height: "28rem",
-            width: `${window.innerWidth < 768 ? "75%" : ""}`,
+            width: `${windowSize < 768 ? "75%" : ""}`,
             transition: {
                 duration: .65,
                 type: "tween",

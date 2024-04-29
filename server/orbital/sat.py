@@ -1,7 +1,7 @@
 import numpy as np
 from scipy.integrate import solve_ivp
 import math
-from orbital.utils import inverse_kepler, two_body_eom, dsin, dcos
+from orbital.utils import inverse_kepler, two_body_eom, handle_units, dsin, dcos
 
 '''
 The Sat class takes in either the Keplerian elements or the state vector of a satellite in perifocal coordinates,
@@ -150,7 +150,7 @@ class Sat():
         Compute orbit period. This can then be used in other computations, such as in evolve_state for generating arrays
         of positions and velocities that perfectly loop with the orbital period. 
         '''
-        print(self.elements[0], pow(self.elements[0], 3/2))
+        # print(self.elements[0], pow(self.elements[0], 3/2))
         period = (2*np.pi * pow(self.elements[0], 3/2)) / np.sqrt(self.mu)
         return period
         
