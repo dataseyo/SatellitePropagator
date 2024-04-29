@@ -4,8 +4,8 @@ import numpy as np
 from json import JSONEncoder
 import json
 
-from orbital.sat import Sat
-from orbital.utils import handle_units
+from server.orbital.sat import Sat
+from server.orbital.utils import handle_units
 
 app = Flask(__name__)
 cors = CORS(app)

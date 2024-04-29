@@ -1,7 +1,7 @@
 import numpy as np
 from scipy.integrate import solve_ivp
 import math
-from orbital.utils import inverse_kepler, two_body_eom, handle_units, dsin, dcos
+from server.orbital.utils import inverse_kepler, two_body_eom, handle_units, dsin, dcos
 
 '''
 The Sat class takes in either the Keplerian elements or the state vector of a satellite in perifocal coordinates,
