@@ -9,6 +9,7 @@ interface OrbitState {
     track: number[][],
     setTrack: (t: number[]) => void,
     addOrbit: (orbit: State) => void,
+    chooseTrack: (id: number) => void,
     resetOrbits: () => void,
     reInitOrbits : () => void,
     eraseOrbits: () => void
@@ -42,20 +43,19 @@ let init_orbits: State[] = [
     {
         id: 5,
         type: "element",
-        state: [6498 , 0.00047, 89.0, 18.4032, 66.3077, 18.4032],
+        state: [35793, 0, .01, 1, 1, 1],
         trackDraw: false,
     },
     {
         id: 6,
         type: "element",
-        state: [35793, 0, .01, 1, 1, 1],
+        state: [42164, .3, 63.4, 0, 270, 1],
         trackDraw: false,
     }
 ]
 
 const useOrbitStore = create<OrbitState>()((set, get) => ({
     orbits: init_orbits,
-    orbitId: 0,
     track: [],
     setTrack: (t: number[]) => {
         set((state) => ({
@@ -71,6 +71,12 @@ const useOrbitStore = create<OrbitState>()((set, get) => ({
                 ...state.orbits,
                 orbit
             ]
+        }))
+    },
+    chooseTrack: (id: Number) => {
+        set((state) => ({
+            orbits: state.orbits.map((orbit) => id === orbit.id ? {...orbit, trackDraw: true} : {...orbit, trackDraw: false}),
+            track: []
         }))
     },
     eraseOrbits: () => {

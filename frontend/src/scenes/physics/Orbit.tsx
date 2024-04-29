@@ -10,9 +10,10 @@ import { forwardRef } from 'react'
 import useOrbitStore from '@/store/orbitstore'
 import { State } from '@/types/types'
 
-const Sat = forwardRef( function Sat({state, map, scale, type, size, speed, trackDraw, arrows}: State, ref: any) {
+const Sat = forwardRef( function Sat({state, id, map, scale, type, size, speed, trackDraw, arrows}: State, ref: any) {
     // zustand store
     const addTrack = useOrbitStore((state) => state.setTrack)
+    const chooseTrack = useOrbitStore((state) => state.chooseTrack)
 
     // state
     const [orbit, setOrbit] = useState<any>(null)
@@ -33,7 +34,7 @@ const Sat = forwardRef( function Sat({state, map, scale, type, size, speed, trac
         scaleFactor = 5000
     }
 
-    let objSize = .065
+    let objSize = .05
     if (size) {
         objSize = size
     }
@@ -45,7 +46,7 @@ const Sat = forwardRef( function Sat({state, map, scale, type, size, speed, trac
 
     useEffect(() => {
         const fetchOrbit = () => {
-            fetch('http://localhost:5000/orbit', {
+            fetch(`${process.env.NEXT_PUBLIC_PROD_API}/orbit`, {
                 body: JSON.stringify({state: state, type: type}),
                 method: "POST",
                 headers: {
@@ -53,16 +54,17 @@ const Sat = forwardRef( function Sat({state, map, scale, type, size, speed, trac
                 }
             })
                 .then((response) => response.json())
-                .then((data) => {
+                .then((data: number[][]) => {
                     setOrbit(data)
                 })
                 .catch((error) => console.log(error))
         }
 
         const data = fetchOrbit()
-        setOrbit(data) 
+        setOrbit(data)
     }, [])
     
+    // to-do: only draw orbital path for selected objects, or transfer orbits
     useEffect(() => {
         if (orbit) {
             const curvePoints = []
@@ -76,7 +78,7 @@ const Sat = forwardRef( function Sat({state, map, scale, type, size, speed, trac
             setPath(curve)
             const points = curve.getSpacedPoints(r.length)
             const geometry = new THREE.BufferGeometry().setFromPoints(points)
-            const material = new THREE.LineBasicMaterial({color: "white", opacity: .25, transparent: true})
+            const material = new THREE.LineBasicMaterial({color: "white", opacity: .2, transparent: true})
             const curveObject = new THREE.Line(geometry, material)
 
             // name curve object to grab it from scene
@@ -92,26 +94,27 @@ const Sat = forwardRef( function Sat({state, map, scale, type, size, speed, trac
     }, [orbit])
 
     let t = 0.001
-
     let spherical = new THREE.Spherical()
+    const earthRotation = ((Math.PI * 2) / (60 * 60 * 24)) * 875
     useFrame((state, delta) => {
-        if (orbit && path) {
+        if (orbit && path && satRef.current) {
             t += .1 * delta // * objSpeed
             let point = path.getPoint(t)
-            satRef.current && satRef.current.position.set(point.x, point.y, point.z)
+            satRef.current.position.lerp(new THREE.Vector3(point.x, point.y, point.z), .5)
 
+            ref.current.rotation.y += delta * earthRotation
             if (rayRef.current && satRef.current) {
                 // let dirToOrigin = new THREE.Vector3(0, 0, 0)
-                let satPos = satRef.current.position
-                let neg = new THREE.Vector3(-satPos.x, -satPos.y, -satPos.z)
-                rayRef.current.set(satPos, neg)
-                neg.normalize()
+                // let satPos = satRef.current.position
+                // let neg = new THREE.Vector3(-satPos.x, -satPos.y, -satPos.z)
+                // rayRef.current.set(satPos, neg)
+                // neg.normalize()
 
                 // note: this will draw arrows to earth
-                if (arrows) {
-                    let arrowHelper = new THREE.ArrowHelper(neg, satPos, 10, "red")
-                    scene.add(arrowHelper)
-                }
+                // if (arrows) {
+                //     let arrowHelper = new THREE.ArrowHelper(neg, satPos, 10, "red")
+                //     scene.add(arrowHelper)
+                // }
             
                 // attempt 2 ground track
                 if (trackDraw) {
@@ -136,17 +139,58 @@ const Sat = forwardRef( function Sat({state, map, scale, type, size, speed, trac
         } 
         return "palegreen"
     }
+
+    // let spherical = new THREE.Spherical()
+    // let curr = 0
+    // let inc = 20
+    // useInterval(() => {
+    //     if (satRef.current && orbit && path) {
+    //         let r = JSON.parse(orbit.state).r
+    //         let point = path.getPoint(curr)
+    //         if (curr + inc >= r.length) {
+    //             curr = 0
+    //         }
+    //         // for (let i = 1; i < inc; i++) {
+    //         //     curr += i
+    //         //     satRef.current.position.lerp(new THREE.Vector3(r[curr][0], r[curr][1], r[curr][2]), 1)
+    //         //     // satRef.current.position.copy(new THREE.Vector3(point.x, point.y, point.z))
+    //         // }
+    //         curr += inc
+    //         satRef.current.position.lerp(new THREE.Vector3(r[curr][0], r[curr][1], r[curr][2]), .5)
+    //     }
+
+    //     // draw ground track
+    //     if (trackDraw && rayRef.current && satRef.current) {
+    //         let satPos = new THREE.Vector3
+    //         satPos.copy(satRef.current.position)
+    //         let neg = new THREE.Vector3(-satPos.x, -satPos.y, -satPos.z)
+    //         rayRef.current.set(satPos, neg)
+    //         // let arrowHelper = new THREE.ArrowHelper(neg, satPos, 1, "red")
+    //         // scene.add(arrowHelper)
+
+    //         let intersection = rayRef.current.intersectObject(ref.current)[0]
+    //         if (intersection && intersection.point) {
+    //             let localIntersection = ref.current.worldToLocal(intersection.point)
+    //             spherical.setFromVector3(localIntersection)
+    
+    //             let lat = THREE.MathUtils.radToDeg(Math.PI / 2 - spherical.phi)
+    //             let long = THREE.MathUtils.radToDeg(spherical.theta)
+    //             long = long - 90
+    //             addTrack([long, lat])
+    //         }
+    //     }
+    // }, 1)
     
     return (
         <group>
             <raycaster ref={rayRef}/>
-            <mesh position={[0, 3, 0]} ref={satRef} >
+            <mesh position={[0, 0, 0]} ref={satRef} onClick={() => chooseTrack(id)}>
                 <sphereGeometry args={[objSize]}/>
                 <meshLambertMaterial 
                     map={map} 
                     color={colorRender()} 
-                    transparent={true}
-                    opacity={0.7}
+                    transparent={false}
+                    // opacity={0.7}
                 />
             </mesh>
         </group>
@@ -162,17 +206,6 @@ function Orbit() {
     const earthTexture = useTexture('/earthday.jpg')
     const moonTexture = useTexture('/moon.jpeg')
     const earthRef = useRef<THREE.Mesh>(null)
-
-    const earthRotation = ((Math.PI * 2) / (60 * 60 * 24)) / .0000729 
-
-    useFrame((state, delta) => {
-        // rotate earth
-        const time = state.clock.getElapsedTime()
-
-        if (earthRef.current) {
-            earthRef.current.rotation.y += earthRotation * delta
-        }
-    })
 
     return (
         <group>
