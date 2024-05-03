@@ -90,7 +90,7 @@ const OrbitConfig = () => {
         let id = randomBytes(10).toString()
 
         const getOrbit = async () => {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_DEV_API}/orbit`, {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_PROD_API}/orbit`, {
                 body: JSON.stringify({state: data, type: checked ? "state" : "element"}),
                 method: "POST",
                 headers: {
