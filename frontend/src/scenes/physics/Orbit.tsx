@@ -104,17 +104,10 @@ const Sat = forwardRef( function Sat({state, id, map, period, scale, type, size,
         return "palegreen"
     }
 
-    const conditionalTexture = () => {
+    const ConditionalTexture = () => {
         let mapTexture = useTexture(map ?? `${map}`)
         return mapTexture
     }
-
-    const emptyTexture = () => {
-        let mapTexture
-        return mapTexture
-    }
-
-    // const [hover, setHover] = useState(false)
     
     return (
         // onClick={() => setHover(true)} onPointerOver={(() => setHover(true))} onPointerLeave={() => setHover(false)}
@@ -130,7 +123,7 @@ const Sat = forwardRef( function Sat({state, id, map, period, scale, type, size,
                 {
                     map ?
                         <meshLambertMaterial 
-                        map={conditionalTexture()} 
+                        map={ConditionalTexture()} 
                         color={colorRender()} 
                         transparent={false}
                         // opacity={0.7}
