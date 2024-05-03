@@ -127,12 +127,21 @@ const Sat = forwardRef( function Sat({state, id, map, period, scale, type, size,
                 onClick={() => chooseTrack(id)} 
             >
                 <sphereGeometry args={[objSize]}/>
-                <meshLambertMaterial 
-                    map={map ? conditionalTexture() : emptyTexture()} 
-                    color={colorRender()} 
-                    transparent={false}
-                    // opacity={0.7}
-                />
+                {
+                    map ?
+                        <meshLambertMaterial 
+                        map={conditionalTexture()} 
+                        color={colorRender()} 
+                        transparent={false}
+                        // opacity={0.7}
+                        /> 
+                        : 
+                        <meshLambertMaterial 
+                            color={colorRender()} 
+                            transparent={true}
+                            opacity={0.7}
+                        />
+                }
             </mesh>
         </group>
     )
