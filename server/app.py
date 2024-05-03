@@ -25,11 +25,12 @@ def parse_state(data):
         # print("getting element with", state)
         sat = Sat(elements=state)
         period_elem = sat.get_period()
+        period_canonical = handle_units("canonical", "p", period_elem)
         print("period", period_elem)
         r, v = sat.evolve_state(period_elem)
         r = handle_units("canonical", "r", r)
         v = handle_units("canonical", "v", v)
-        res = {"r": r, "v": v}
+        res = {"r": r, "v": v, "period": period_canonical}
         res = json.dumps(res, cls=NumpyArrayEncoder)
         return res
     else:

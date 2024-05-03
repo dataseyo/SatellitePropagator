@@ -28,6 +28,8 @@ def handle_units(type, quantity, arr):
             return arr / 6378.136
         if quantity == "v":
             return arr / 7.90536828
+        if quantity == "p":
+            return arr / 3.986004418e5
     if type == "metric":
         if quantity == "r":
             return arr * 6378.136

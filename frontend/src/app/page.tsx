@@ -1,40 +1,53 @@
-"use client"
+import GroundTrack from '../components/GroundTrack/GroundTrack'
+import Scene from '@/components/Scene/Scene';
+import { init_orbits } from '@/data/init';
+import { State } from '@/types/types';
+import TLE from '@/components/TLE/TLE';
 
-import { Canvas } from '@react-three/fiber'
-import { Stars, OrbitControls } from '@react-three/drei';
+export default async function Home() {
+  const getOrbit = async (data: number[], type: string) => {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_DEV_API}/orbit`, {
+        body: JSON.stringify({state: data, type: type === "state" ? "state" : "element"}),
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        cache: "no-cache"
+    })
 
-import Orbit from "@/scenes/physics/Orbit";
-import GroundTrack from '../components/GroundTrack/GroundTrack';
+    if (!res.ok) {
+        throw new Error("Orbit fetch failed")
+    }
+    return res.json()
+  }
 
-export default function Home() {
+  const initial_data: State[] = []
+  for (let i = 0; i < init_orbits.length; i++) {
+    let res = await getOrbit(init_orbits[i].state, "element")
+    let { r, period } = JSON.parse(res.state)
+    let newOrbit: State = {
+      id: init_orbits[i].id,
+      type: "element",
+      state: init_orbits[i].state,
+      trackDraw: init_orbits[i].trackDraw,
+      data: r,
+      map: init_orbits[i].map,
+      size: init_orbits[i].size,
+      period: period
+    } 
+    initial_data.push(newOrbit)
+  }
+
   return (
     <div className="flex h-full min-h-screen w-full flex-col items-center justify-center">
       <div className="h-screen w-screen z-0">
-        <Canvas
-          camera={{
-            fov: 45,
-            position: [10, 14, 5],
-            up: [0, 0, 1]
-          }}
-        >
-          {/* CONFIG */}
-          <color attach="background" args={["black"]}/>
-          <OrbitControls 
-            rotation={[0, 2 * Math.PI, 0]} 
-            position={[0, 0, 0]}
-            minDistance={2}
-            maxDistance={50}
-          />
-          <Stars count={5000} radius={200}/>
-          <ambientLight intensity={Math.PI / 8}/>
-          {/* <axesHelper args={[10]}/> */}
-
-          {/* SCENE */}
-          <Orbit/>
-        </Canvas>
+        <Scene initial_data={initial_data}/>
       </div>
 
-      <GroundTrack />
+      <div className="flex justify-between w-full h-100">
+        {/* <TLE /> */}
+        <GroundTrack />
+      </div>
     </div>
   );
 }

@@ -5,15 +5,7 @@ import { FormEvent, useState } from "react";
 
 import useOrbitStore from '@/store/orbitstore'
 import { State } from "@/types/types";
-
-type OrbitInput = {
-    x: number,
-    y: number,
-    z: number,
-    v_x: number,
-    v_y: number,
-    v_z: number
-}
+import { randomBytes } from "crypto";
 
 const conditionalPlaceholder = (placeOne: string, placeTwo: string) => {
     if (window) {
@@ -25,7 +17,8 @@ const conditionalPlaceholder = (placeOne: string, placeTwo: string) => {
 
 const OrbitConfig = () => {
     const addOrbit = useOrbitStore((state) => state.addOrbit)
-        
+    const chooseTrack = useOrbitStore((state) => state.chooseTrack)
+
     const [checked, setChecked] = useState(false)
     const [orbitInput, setOrbitInput] = useState({
         state: {
@@ -89,19 +82,45 @@ const OrbitConfig = () => {
         }))
     }
 
-    const onSubmit = (e: FormEvent) => {
+    const onSubmit = async (e: FormEvent) => {
         e.preventDefault()
 
         let data = Object.values(checked ? orbitInput.state : orbitInput.element)
         data = data.map(d => typeof d === 'string' ? parseFloat(d) : d)
+        let id = randomBytes(10).toString()
+
+        const getOrbit = async () => {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_DEV_API}/orbit`, {
+                body: JSON.stringify({state: data, type: checked ? "state" : "element"}),
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            })
+
+            if (!res.ok) {
+                throw new Error("Orbit fetch failed")
+            }
+            
+            return res.json()
+        }
+        
+        let integratedData: any = await getOrbit()
+        const { r, period } = JSON.parse(integratedData.state)
+        
         let newOrbit: State = {
-            id: 10,
+            id: id,
             type: checked ? "state" : "element",
             state: data,
             trackDraw: false,
+            data: r,
+            period: period
         }
 
         addOrbit(newOrbit)
+        setTimeout(() => {
+            chooseTrack(id)
+        }, 1)
     }
     
     return (
@@ -177,11 +196,11 @@ const OrbitConfig = () => {
                 <h3 className="text-white-100 font-bold ml-2 text-xl mr-2">Config</h3>
                 {/* Modify Orbits */}
                 <div className="flex flex-row mx-4 mt-3 justify-between">
-                    <button className="btn w-1/3 btn-outline mr-2 md:w-1/4 lg:w-1/5">
+                    <button className="btn btn-outline btn-white w-1/3 mr-2 md:w-1/4 lg:w-1/5">
                         Tracks
                     </button>
 
-                    <button className="btn w-1/3 btn-outline mr-2 md:w-1/4 lg:w-1/5">
+                    <button className="btn w-1/3 btn-outline btn-blue mr-2 md:w-1/4 lg:w-1/5">
                         Clear
                     </button>
 
