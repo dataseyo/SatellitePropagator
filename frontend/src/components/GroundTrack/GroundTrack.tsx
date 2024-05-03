@@ -37,7 +37,7 @@ const GroundTrack = () => {
     return (
         <div className="absolute flex flex-col flex-grow-1 right-2 bottom-0 z-10 w-1/2 md:w-2/5">
             <select 
-                className="select select-sm md:select-md -mb-8 md:-mb-14 lg:-mb-20 w-25 md:w-40 text-md md:text-lg border-white-100 focus:border-blue-500 text-white-100 opacity-85 bg-black-700 dark relative self-end select-bordered bg-transparent" 
+                className="select select-sm md:select-md -mb-2 md:-mb-12 lg:-mb-20 w-25 md:w-40 text-md md:text-lg border-white-100 focus:border-blue-500 text-white-100 opacity-85 bg-black-700 dark relative self-end select-bordered bg-transparent" 
                 onChange={(e) => setMapProjection(e.target.value)}
             >
                 <option value="geoEqualEarth" className="text-white-100 text-md md:text-lg opacity-85 bg-black-700">Equal Earth</option>
