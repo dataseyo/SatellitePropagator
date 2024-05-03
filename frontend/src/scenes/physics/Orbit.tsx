@@ -104,13 +104,17 @@ const Sat = forwardRef( function Sat({state, id, map, period, scale, type, size,
         return "palegreen"
     }
 
-    let mapTexture
-    if (map) {
-        console.log(map)
-        mapTexture = useTexture(`${map}`)
+    const conditionalTexture = () => {
+        let mapTexture = useTexture(map ?? `${map}`)
+        return mapTexture
     }
 
-    const [hover, setHover] = useState(false)
+    const emptyTexture = () => {
+        let mapTexture
+        return mapTexture
+    }
+
+    // const [hover, setHover] = useState(false)
     
     return (
         // onClick={() => setHover(true)} onPointerOver={(() => setHover(true))} onPointerLeave={() => setHover(false)}
@@ -122,9 +126,9 @@ const Sat = forwardRef( function Sat({state, id, map, period, scale, type, size,
                 ref={satRef} 
                 onClick={() => chooseTrack(id)} 
             >
-                <sphereGeometry args={[hover ? objSize * 2 : objSize]}/>
+                <sphereGeometry args={[objSize]}/>
                 <meshLambertMaterial 
-                    map={mapTexture} 
+                    map={map ? conditionalTexture() : emptyTexture()} 
                     color={colorRender()} 
                     transparent={false}
                     // opacity={0.7}
@@ -152,14 +156,13 @@ export function Orbit() {
             earthRef.current.rotation.y += delta * earthRotation
         }
     })
-    const [hover, setHover] = useState(false)
 
     return (
         <group>
             <directionalLight position={[0, 20, 5]} intensity={5} color={"white"} ref={dirLight}/>
 
             {/* Earth */}
-            <Sphere args={[!hover ? .8 : 2, 64, 32]} ref={earthRef} rotation-x={Math.PI/2} onClick={() => setHover(!hover)}>
+            <Sphere args={[.8, 64, 32]} ref={earthRef} rotation-x={Math.PI/2}>
                 <meshStandardMaterial color="white" map={earthTexture}/>
             </Sphere>
 
