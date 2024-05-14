@@ -44,5 +44,26 @@ export const init_orbits: State[] = [
         size: .6,
         map: '/moon.jpeg',
         data: []
-    }
+    },
+    {
+        id: "7",
+        type: "element",
+        state: [42163, 0.3, 63.4, 22, 270, 220],
+        trackDraw: false,
+        data: []
+    },
+    {
+        id: "8",
+        type: "element",
+        state: [7200 , 0.047, 62, -30, 45, 80],
+        trackDraw: false,
+        data: []
+    },
+    {
+        id: "9",
+        type: "element",
+        state: [12000 , 0.47, -90, -30, 0, 20],
+        trackDraw: false,
+        data: []
+    },
 ]
