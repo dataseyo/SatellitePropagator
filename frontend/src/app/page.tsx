@@ -3,24 +3,10 @@ import Scene from '@/components/Scene/Scene';
 import { init_orbits } from '@/data/init';
 import { State } from '@/types/types';
 import TLE from '@/components/TLE/TLE';
+import { getOrbit } from '@/api/orbit';
 
 export default async function Home() {
-  const getOrbit = async (data: number[], type: string) => {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_PROD_API}/orbit`, {
-        body: JSON.stringify({state: data, type: type === "state" ? "state" : "element"}),
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        cache: "no-cache"
-    })
-
-    if (!res.ok) {
-        throw new Error("Orbit fetch failed")
-    }
-    return res.json()
-  }
-
+  // populate initial default orbits
   const initial_data: State[] = []
   for (let i = 0; i < init_orbits.length; i++) {
     let res = await getOrbit(init_orbits[i].state, "element")

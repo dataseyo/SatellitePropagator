@@ -30,7 +30,6 @@ const Sat = forwardRef( function Sat({state, id, map, period, scale, type, size,
         objSize = size
     }
 
-    // to-do: only draw orbital path for selected objects, or transfer orbits
     useEffect(() => {
         if (data) {
             const curvePoints = []
@@ -58,17 +57,17 @@ const Sat = forwardRef( function Sat({state, id, map, period, scale, type, size,
         }
     }, [])
 
+    // animation loop
     let t = 0.001
     let spherical = new THREE.Spherical()
     useFrame((state, delta) => {
         if (path && satRef.current) {
             let p = 1
             if (period) {p = period}
-            t += (.01 * delta) / p // * objSpeed
+            t += (.01 * delta) / p 
             let point = path.getPoint(t)
             satRef.current.position.lerp(new THREE.Vector3(point.x, point.y, point.z), .5)
 
-            // ref.current.rotation.y += delta * earthRotation
             if (rayRef.current && satRef.current) {
                 // let dirToOrigin = new THREE.Vector3(0, 0, 0)
                 // let satPos = satRef.current.position
@@ -143,14 +142,10 @@ const Sat = forwardRef( function Sat({state, id, map, period, scale, type, size,
 export function Orbit() {
     // get orbits from store
     const zOrbits = useOrbitStore((state) => state.orbits)
-    const addOrbit = useOrbitStore((state) => state.addOrbit)
-    const chooseTrack = useOrbitStore((state) => state.chooseTrack)
 
     const dirLight = useRef<any>()
-    // useHelper(dirLight, DirectionalLightHelper, 4, "red")
     const earthTexture = useTexture('/earthday.jpg')
     const earthRef = useRef<THREE.Mesh>(null)
-
     const earthRotation = ((Math.PI * 2) / (60 * 60 * 24)) * 4200
 
     useFrame((state, delta) => {
@@ -172,7 +167,6 @@ export function Orbit() {
             {
                 zOrbits?.map((orbit) => (
                     <Sat key={orbit.id} {...orbit} ref={earthRef}/>
-                    // <Sat key={orbit.id} {...orbit} ref={earthRef} map={orbit.id === 5 ? moonTexture : undefined}/>
                 ))
             }
         </group>

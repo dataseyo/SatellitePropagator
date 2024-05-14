@@ -13,7 +13,8 @@ interface OrbitState {
     reInitOrbits : () => void,
     eraseOrbits: () => void,
     hydrateData: (id: string) => void,
-    setTrackFalse: () => void
+    setTrackFalse: () => void,
+    activeOrbit: () => void
 }
 
 const useOrbitStore = create<OrbitState>()((set, get) => ({
@@ -33,11 +34,6 @@ const useOrbitStore = create<OrbitState>()((set, get) => ({
                 ...state.orbits,
                 orbit
             ]
-        }))
-    },
-    setData: (data: number[]) => {
-        set((state) => ({
-            
         }))
     },
     hydrateData: (id: string) => {
@@ -74,6 +70,9 @@ const useOrbitStore = create<OrbitState>()((set, get) => ({
             // orbits: init_orbits
         }))
     },
+    activeOrbit: () => {
+        get().orbits
+    }
 }))
 
 export default useOrbitStore

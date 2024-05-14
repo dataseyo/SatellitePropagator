@@ -38,9 +38,11 @@ def parse_state(data):
         period = sat.get_period()
         print("period", period)
         r, v = sat.evolve_state(period)
+        r = handle_units("canonical", "r", r)
+        v = handle_units("canonical", "v", v)
         res = {"r": r, "v": v}
         res = json.dumps(res, cls=NumpyArrayEncoder) 
-        return res
+    return res
 
 @app.route("/orbit", methods=["POST"])
 @cross_origin()
@@ -56,4 +58,3 @@ def greet():
 
 if __name__== "__main__":
     app.run(host="0.0.0.0", debug=False)
-

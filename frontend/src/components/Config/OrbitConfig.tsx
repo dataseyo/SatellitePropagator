@@ -2,10 +2,11 @@
 import { IoIosAddCircle } from "react-icons/io";
 import { IoInformationCircle } from "react-icons/io5";
 import { FormEvent, useState } from "react";
+import { randomBytes } from "crypto";
 
 import useOrbitStore from '@/store/orbitstore'
 import { State } from "@/types/types";
-import { randomBytes } from "crypto";
+import { getOrbit } from "@/api/orbit";
 
 const conditionalPlaceholder = (placeOne: string, placeTwo: string) => {
     if (window) {
@@ -88,24 +89,8 @@ const OrbitConfig = () => {
         let data = Object.values(checked ? orbitInput.state : orbitInput.element)
         data = data.map(d => typeof d === 'string' ? parseFloat(d) : d)
         let id = randomBytes(10).toString()
-
-        const getOrbit = async () => {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_PROD_API}/orbit`, {
-                body: JSON.stringify({state: data, type: checked ? "state" : "element"}),
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                }
-            })
-
-            if (!res.ok) {
-                throw new Error("Orbit fetch failed")
-            }
-            
-            return res.json()
-        }
         
-        let integratedData: any = await getOrbit()
+        let integratedData: any = await getOrbit(data, checked ? "state" : "element")
         const { r, period } = JSON.parse(integratedData.state)
         
         let newOrbit: State = {
@@ -187,14 +172,13 @@ const OrbitConfig = () => {
                 </button>
                 </form>
 
-
             {/* Orbit Modifier - clear, delete */}
             </div>
 
             {/* Config Bottom Bar */}
-            <div className="flex flex-col h-8 mt-4">
+            {/* <div className="flex flex-col h-8 mt-4">
                 <h3 className="text-white-100 font-bold ml-2 text-xl mr-2">Config</h3>
-                {/* Modify Orbits */}
+       
                 <div className="flex flex-row mx-4 mt-3 justify-between">
                     <button className="btn btn-outline btn-white w-1/3 mr-2 md:w-1/4 lg:w-1/5">
                         Tracks
@@ -208,11 +192,7 @@ const OrbitConfig = () => {
                         Elements
                     </button>
                 </div>
-
-                {/* Ground Tracks */}
-
-                {/* Elements, Energy, etc. */}
-            </div>
+            </div> */}
         </div>
     )
 }

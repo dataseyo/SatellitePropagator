@@ -3,6 +3,8 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm ci
 COPY . .
+ARG NEXT_PUBLIC_DEV_API
+ENV NEXT_PUBLIC_DEV_API=$NEXT_PUBLIC_DEV_API
 RUN npm run build
 
 FROM base as deploy
@@ -13,4 +15,5 @@ COPY --from=base /app/public ./public
 COPY --from=base /app/node_modules ./node_modules
 ENV NODE_ENV=production
 EXPOSE 3000
+
 CMD ["npm", "start", "--host"]

@@ -14,7 +14,6 @@ export default function Scene({initial_data}: {initial_data: State[]}) {
     const orbits = useOrbitStore((state) => state.orbits)
     
     useEffect(() => {
-        console.log(orbits.length)
         if (orbits.length === 0) {
             initial_data.map((orbit) => {
                 addOrbit(orbit)

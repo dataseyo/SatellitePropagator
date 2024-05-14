@@ -4,6 +4,7 @@ import { LiaAtomSolid } from "react-icons/lia";
 import { IoIosMenu } from "react-icons/io";
 import { AnimatePresence, motion } from 'framer-motion'
 import { useState } from "react";
+import Link from "next/link";
 
 import OrbitConfig from "../Config/OrbitConfig";
 import { useWindowSize } from "@/hooks/useWindowSize";
@@ -26,6 +27,7 @@ const MenuButton = ({children, onClick}: MenuButtonProps) => {
 
 export default function Navbar() {
     const [open, setOpen] = useState<boolean>(false)
+    const [mobileOpen, setMobileOpen] = useState<boolean>(false)
     let windowSize = useWindowSize()
 
     const menu = {
@@ -39,7 +41,7 @@ export default function Navbar() {
             }
         },
         open: {
-            height: "28rem",
+            height: "21rem",
             width: `${windowSize < 768 ? "75%" : ""}`,
             transition: {
                 duration: .65,
@@ -66,6 +68,10 @@ export default function Navbar() {
     const toggleMenu = () => {
         setOpen(prevOpen => !prevOpen)
     }
+
+    const toggleMobileMenu = () => {
+        setMobileOpen(prevMobileOpen => !prevMobileOpen)
+    }
     
     return (
         <motion.div 
@@ -77,7 +83,7 @@ export default function Navbar() {
             <div className="flex h-20 flex-row items-center content-center">
                 {/* mobile */}
                 <div className="flex flex-1 items-center justify-between md:hidden text-white mx-4">
-                    <MenuButton>
+                    <MenuButton onClick={toggleMobileMenu}>
                         <IoIosMenu size={35} className="text-white-100"/>
                         <h2 className="text-white-100">Menu</h2>
                     </MenuButton>
@@ -90,15 +96,19 @@ export default function Navbar() {
 
                 {/* desktop */}
                 <div className="flex-1 items-center justify-between mx-8 hidden md:flex">
-                    <MenuButton>
-                        <h2 className="text-white-100">Home</h2>
-                    </MenuButton>
+                    <Link href="/">
+                        <MenuButton>
+                            <h2 className="text-white-100">Home</h2>
+                        </MenuButton>
+                    </Link>
 
-                    <MenuButton>
-                        <button className="text-white-100">
-                            <h2>The Physics</h2>
-                        </button>
-                    </MenuButton>
+                    <Link href="/physics">
+                        <MenuButton>
+                            <h2 className="text-white-100">
+                                    The Physics
+                            </h2> 
+                        </MenuButton>
+                    </Link>
 
                     <MenuButton onClick={toggleMenu}>                        
                         <LiaAtomSolid size={35} className="text-white-100"/>

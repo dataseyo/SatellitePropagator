@@ -24,6 +24,9 @@ class Sat():
             self.state = self.elem_to_state("ECI")
 
     def state_to_elem(self):
+        '''
+        Converts a state vector into Keplerian orbital elements.
+        '''
         r = self.state[:3]
         v = self.state[3:]
         h_vec = np.cross(r, v)
@@ -72,7 +75,6 @@ class Sat():
         Type can be: 
             - PQW (perifocal)
             - ECI (Earth centered inertial)
-            - ECEF (Earth-centered Earth-fixed)
         '''
 
         # get elements from elements vector
@@ -83,19 +85,6 @@ class Sat():
         w = self.elements[4]
         F = self.elements[5]
 
-        # compute initial constants
-        # run inverse Kepler if evolving the orbital elements
-        #     nu = np.sqrt(mu / a**3)
-        #     M_0 = np.deg2rad(10)
-        #     M_t = M_0 + nu * dt
-        #     E = inverse_kepler(M_0, e, 10)
-
-        #     # compute true anomaly
-        #     F = 2 * math.atan(math.sqrt((1+e)/(1-e)) * math.tan(E/2))
-        #     F = F % (2*np.pi)
-        #     F = np.rad2deg(F)
-
-        theta = w + F
         p = a * (1 - e**2)
         h = np.sqrt(p*self.mu)
 

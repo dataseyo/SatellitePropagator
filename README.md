@@ -20,10 +20,36 @@ In /server, run the Flask application with python app.py.
 
 I'm integrating the unperturbed restricted 2 body equations of motion in order to propagate orbits given their current state at epoch, but adding in perturbations due to the obliquity of the Earth, solar radiation, and so on is in the works.
 
-I'm also ignoring the fact that the Earth is best represented by a Spheroid, which means that the ground tracks being drawn will be some kilometers off and are best used as a mere visualization tool rather than as a scientific one. The third edition of the "Supplement to the Astronomical Almanac" goes over the steps that would be required in order to more precisely track the SSP (satellite sub-point) by computing the true height above spheroid at which a line between the satellite and Earth's center would intersect the surface. Most of this work involves performing the correct coordinate transformations between from PQW -> ECI -> ECEF -> geodetic (or geocentric). At the moment, this application stops in the ECI frame.
+I'm also ignoring the fact that the Earth is best represented by a Spheroid, which means that the ground tracks being drawn will often be some kilometers off from the WGS84 coordinates and are best used as a mere visualization tool rather than as a scientific one. The third edition of the "Supplement to the Astronomical Almanac" goes over the steps that would be required in order to more precisely track the SSP (satellite sub-point) by computing the height above spheroid, the geodetic latitude, and the longitude from some epoch. Most of this work involves performing the correct coordinate transformations between from PQW -> ECI -> ECEF -> geodetic (or geocentric). At the moment, the logic in this application stops in the ECI frame and ignores the actual Earth orientation parameters.
+
+### Resourced Used
+
+- "Fundamentals of Astrodynamics" by Bate, Mueller, White, and Saylor.
+- "Analytical Mechanics of Space Systems" by Schaub.
+- "Fundamentals of Astrodynamics and Applications" by Vallado.
+- "Fundamentals of Celestial Mechanics" by Danby.
+- "Explanatory Supplement to the Astronomical Almanac (3rd ed.)" by Urban and Seidelmann.
 
 ### To-Do
 
-- Sanitize orbit input (e.g., either allow for parabolic/hyperbolic orbits, or prevent them)
+- Astrodynamics/Backend
+  - Modify Keplerian element <--> state vector to use Universal Variable formulation.
+  - Numerically integrate the perturbed equations of motion (with the Lagrangian bracket method) and include graphs of the functional variation in the orbital elements as a function of the perturbative terms.
+  - Extract backend route logic into separate controller folders.
+  - Implement orbital transfers and rendezvous.
+  - Add ground track algorithm to Sat class.
+  - Implement topocentric viewer.
+  - Add backend api [testing](https://flask.palletsprojects.com/en/3.0.x/testing/)
+- Frontend
+  - Add Element/Period/etc. data for active orbit to bottom left of screen.
+  - Sanitize orbit input (e.g., either allow for parabolic/hyperbolic orbits, or prevent them)
+  - Add Mobile menu functionality.
+  - Add react-markdown and latex parsing for /physics explanation page.
+  - Add presets tab to "Add Orbit" modal which allows users to either (1) hit an API endpoint that returns TLEs of actual satellites and propagates their orbits, or (2) select from a list of common orbit categories to be added
+  - Add Suspense to three.js scenes.
+  - Add "delete orbit" and "clear all orbits" options.
+  - Handle wide screen UI.
+- Bugs
+  - Investigate bug that causes ground tracks to keep drawing, but three.js to stop rendering orbits, when user's client is not open to the application.
 
 Author: Zachary Shifrel

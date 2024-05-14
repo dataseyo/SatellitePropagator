@@ -52,7 +52,12 @@ const GroundTrack = () => {
                 <Geographies geography="/features.json">
                     {({ geographies }) =>
                         geographies.map((geo) => (
-                        <Geography key={geo.rsmKey} geography={geo} />
+                            <Geography 
+                                fill="#E0E1DD"
+                                stroke="#000000"
+                                key={geo.rsmKey} 
+                                geography={geo} 
+                            />
                         ))
                     }
                 </Geographies>
