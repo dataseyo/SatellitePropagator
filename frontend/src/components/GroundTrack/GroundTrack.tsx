@@ -1,21 +1,20 @@
 "use client"
 
 import { ComposableMap, Geographies, Geography, Line } from "react-simple-maps"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { ProjectionConfig } from "react-simple-maps"
 
 import useOrbitStore from "@/store/orbitstore"
 import { useMemo } from "react"
 
 const GroundTrack = () => {
-    // type of map projection
-    const [type, setType] = useState("")
     const [mapProjection, setMapProjection] = useState<string>("geoEqualEarth")
     
     // zustand store getter
-    let { track } = useOrbitStore((state) => state)
+    let track = useOrbitStore((state) => state.track)
 
-    if (track.length > 10000) {
+    // clip beginning of ground track as it grows larger
+    if (track.length > 17000) {
         track.splice(0, 5)
     } 
 

@@ -6,6 +6,7 @@ interface OrbitState {
     orbits: State[],
     // current ground track
     track: number[][],
+    activeOrbit: string, // orbit ID
     setTrack: (t: number[]) => void,
     addOrbit: (orbit: State) => void,
     chooseTrack: (id: string) => void,
@@ -14,12 +15,13 @@ interface OrbitState {
     eraseOrbits: () => void,
     hydrateData: (id: string) => void,
     setTrackFalse: () => void,
-    activeOrbit: () => void
+    activateOrbit: () => void
 }
 
 const useOrbitStore = create<OrbitState>()((set, get) => ({
     orbits: [],
     track: [],
+    activeOrbit: "2",
     setTrack: (t: number[]) => {
         set((state) => ({
             track: [
@@ -44,10 +46,17 @@ const useOrbitStore = create<OrbitState>()((set, get) => ({
         })
     },
     chooseTrack: (id: string) => {
+        console.log("track", get().track)
+        let newTrack: any = []
         set((state) => ({
-            orbits: state.orbits.map((orbit) => id === orbit.id ? {...orbit, trackDraw: true} : {...orbit, trackDraw: false}),
-            track: []
+            ...state,
+            track: newTrack,
+            activeOrbit: id
         }))
+        // set((state) => ({
+        //     // orbits: state.orbits.map((orbit) => id === orbit.id ? {...orbit, trackDraw: true} : {...orbit, trackDraw: false}),
+        //     // track: newTrack
+        // }))
     },
     setTrackFalse: () => {
         set((state) => ({
@@ -70,7 +79,7 @@ const useOrbitStore = create<OrbitState>()((set, get) => ({
             // orbits: init_orbits
         }))
     },
-    activeOrbit: () => {
+    activateOrbit: () => {
         get().orbits
     }
 }))
