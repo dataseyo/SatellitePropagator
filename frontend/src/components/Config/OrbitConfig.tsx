@@ -16,7 +16,7 @@ const conditionalPlaceholder = (placeOne: string, placeTwo: string) => {
     return placeOne
 }
 
-const OrbitConfig = () => {
+const OrbitConfig = ({setOpen}: {setOpen: React.Dispatch<React.SetStateAction<boolean>>}) => {
     const addOrbit = useOrbitStore((state) => state.addOrbit)
     const chooseTrack = useOrbitStore((state) => state.chooseTrack)
 
@@ -106,6 +106,7 @@ const OrbitConfig = () => {
         setTimeout(() => {
             chooseTrack(id)
         }, 1)
+        setOpen(false)
     }
     
     return (

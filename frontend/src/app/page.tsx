@@ -26,12 +26,10 @@ export default async function Home() {
 
   return (
     <div className="flex h-full min-h-screen w-full flex-col items-center justify-center">
-      <div className="h-screen w-screen z-0">
-        <Scene initial_data={initial_data}/>
-      </div>
+      <Scene initial_data={initial_data}/>
 
       <div className="flex justify-between w-full h-100">
-        {/* <TLE /> */}
+        <TLE />
         <GroundTrack />
       </div>
     </div>

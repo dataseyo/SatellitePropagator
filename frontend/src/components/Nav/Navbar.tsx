@@ -124,7 +124,7 @@ export default function Navbar() {
                         initial="closed"
                         className="flex-col mx-4"
                     >
-                        <OrbitConfig />
+                        <OrbitConfig setOpen={setOpen}/>
                     </motion.div>
                 }
             </AnimatePresence>

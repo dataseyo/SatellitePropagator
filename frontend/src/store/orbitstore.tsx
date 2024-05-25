@@ -46,7 +46,6 @@ const useOrbitStore = create<OrbitState>()((set, get) => ({
         })
     },
     chooseTrack: (id: string) => {
-        console.log("track", get().track)
         let newTrack: any = []
         set((state) => ({
             ...state,
