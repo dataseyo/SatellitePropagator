@@ -32,7 +32,7 @@ const GroundTrack = () => {
     const config = useMemo(() => {
         return scaleConfig(mapProjection)
     }, [mapProjection])
-    
+
     return (
         <div className="absolute flex flex-col flex-grow-1 right-2 bottom-0 z-10 w-1/2 md:w-2/5">
             <select 
@@ -63,7 +63,7 @@ const GroundTrack = () => {
 
                 {/* Ground Track Line(s) */}
                 <Line
-                    coordinates={track.map((t, index) => [t[0], t[1]])}
+                    coordinates={track && track.slice(2, track.length).map((t) => [t[0], t[1]])}
                     stroke="red"
                     strokeWidth={4}
                 />

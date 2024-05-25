@@ -17,6 +17,7 @@
     "react": "^18",
     "react-dom": "^18",
     "react-icons": "^5.1.0",
+    "react-intersection-observer": "^9.10.2",
     "react-simple-maps": "^3.0.0",
     "three": "^0.163.0",
     "zustand": "^4.5.2"

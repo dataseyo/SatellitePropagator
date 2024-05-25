@@ -4,7 +4,6 @@ import { useFrame} from '@react-three/fiber'
 import { Sphere, useTexture, useHelper, Html } from '@react-three/drei'
 import { useEffect, useState, useRef, useMemo, forwardRef } from 'react'
 import * as THREE from 'three'
-// import { DirectionalLightHelper } from 'three';
 
 import useOrbitStore from '@/store/orbitstore'
 import { State } from '@/types/types'
@@ -23,13 +22,13 @@ const Outline = ({id}: {id: string}) => {
     )
 }
 
-const Sat = forwardRef( function Sat({state, id, map, period, scale, type, size, speed, data, arrows}: State, ref: any) {
+const Sat = forwardRef( function Sat({state, id, map, period, type, size, data, nu}: State, ref: any) {
     // zustand store
     const addTrack = useOrbitStore((state) => state.setTrack)
-    const chooseTrack = useOrbitStore((state) => state.chooseTrack)
     const activeOrbit = useOrbitStore((state) => state.activeOrbit)
+    const updateNu = useOrbitStore((state) => state.updateNu)
     let trackDraw = activeOrbit === id // boolean that controls ground track
-
+    
     // state
     const [path, setPath] = useState<any>(null)
 
@@ -38,6 +37,7 @@ const Sat = forwardRef( function Sat({state, id, map, period, scale, type, size,
     const satId = `${state[0]} ${state[1]}`
     const rayRef = useRef<THREE.Raycaster>(null)
     const lineRef = useRef<any>(null)
+    // const visible = usePageVisibility()
 
     // set scale and size and speed
     let objSize = .02
@@ -73,14 +73,14 @@ const Sat = forwardRef( function Sat({state, id, map, period, scale, type, size,
     }, [])
 
     // animation loop
-    let t = 0.001
     let spherical = new THREE.Spherical()
     useFrame((_, delta) => {
         if (path && satRef.current) {
             let p = 1
             if (period) {p = period}
-            t += (.001 * delta) / p 
-            let point = path.getPoint(t)
+            let t = (.001 * delta) / p
+            updateNu(t, id)
+            let point = path.getPoint(nu)
             satRef.current.position.lerp(new THREE.Vector3(point.x, point.y, point.z), .5)
 
             if (rayRef.current && satRef.current) {
@@ -124,18 +124,9 @@ const Sat = forwardRef( function Sat({state, id, map, period, scale, type, size,
         return mapTexture
     }
 
-    const test = () => {
-        // only make 
-        chooseTrack(id)
-        console.log("pointer", id)
-    }
-
-    const [outline, setOutline] = useState(false)
-    
     return (
-        // onClick={() => setHover(true)} onPointerOver={(() => setHover(true))} onPointerLeave={() => setHover(false)}
         <group>
-            <line ref={lineRef} />
+            <line ref={lineRef}/>
             <raycaster ref={rayRef}/>
                 <mesh 
                     ref={satRef}
@@ -155,7 +146,6 @@ const Sat = forwardRef( function Sat({state, id, map, period, scale, type, size,
                         <meshLambertMaterial 
                             color={colorRender()} 
                             transparent={true}
-                            opacity={0.7}
                         />
                     }
                 </mesh>
@@ -183,7 +173,7 @@ export function Orbit() {
             <directionalLight position={[0, 20, 5]} intensity={5} color={"white"} ref={dirLight}/>
 
             {/* Earth */}
-            <Sphere args={[.8, 64, 32]} ref={earthRef} rotation-x={Math.PI/2}>
+            <Sphere args={[.9, 64, 32]} ref={earthRef} rotation-x={Math.PI/2}>
                 <meshStandardMaterial color="white" map={earthTexture}/>
             </Sphere>
 
