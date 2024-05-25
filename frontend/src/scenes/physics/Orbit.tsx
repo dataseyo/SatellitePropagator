@@ -7,7 +7,6 @@ import * as THREE from 'three'
 
 import useOrbitStore from '@/store/orbitstore'
 import { State } from '@/types/types'
-import usePageVisibility from '@/hooks/usePageVisibility';
 
 const Outline = ({id}: {id: string}) => {
     const chooseTrack = useOrbitStore((state) => state.chooseTrack)
@@ -23,14 +22,13 @@ const Outline = ({id}: {id: string}) => {
     )
 }
 
-const Sat = forwardRef( function Sat({state, id, map, period, scale, type, size, speed, data, arrows}: State, ref: any) {
+const Sat = forwardRef( function Sat({state, id, map, period, type, size, data, nu}: State, ref: any) {
     // zustand store
     const addTrack = useOrbitStore((state) => state.setTrack)
-    const chooseTrack = useOrbitStore((state) => state.chooseTrack)
     const activeOrbit = useOrbitStore((state) => state.activeOrbit)
+    const updateNu = useOrbitStore((state) => state.updateNu)
     let trackDraw = activeOrbit === id // boolean that controls ground track
     
-
     // state
     const [path, setPath] = useState<any>(null)
 
@@ -75,14 +73,14 @@ const Sat = forwardRef( function Sat({state, id, map, period, scale, type, size,
     }, [])
 
     // animation loop
-    let t = 0.001
     let spherical = new THREE.Spherical()
     useFrame((_, delta) => {
         if (path && satRef.current) {
             let p = 1
             if (period) {p = period}
-            t += (.001 * delta) / p 
-            let point = path.getPoint(t)
+            let t = (.001 * delta) / p
+            updateNu(t, id)
+            let point = path.getPoint(nu)
             satRef.current.position.lerp(new THREE.Vector3(point.x, point.y, point.z), .5)
 
             if (rayRef.current && satRef.current) {

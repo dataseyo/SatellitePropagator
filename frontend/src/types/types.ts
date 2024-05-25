@@ -9,7 +9,8 @@ interface State {
     speed?: number,
     trackDraw: boolean,
     arrows?: boolean,
-    period?: number
+    period?: number,
+    nu: number, // location in orbit relative to perigee
 }
 
 export type {

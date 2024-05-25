@@ -56,10 +56,10 @@ export default function Scene({initial_data}: {initial_data: State[]}) {
     }, [])
 
     const { ref, inView } = useInView()
+    // const visible = usePageVisibility()
 
     return (
         <div ref={ref} className="h-screen w-screen z-0">
-
             <Canvas
                 camera={{
                     fov: 45,

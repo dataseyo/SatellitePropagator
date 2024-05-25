@@ -2,8 +2,10 @@ import GroundTrack from '../components/GroundTrack/GroundTrack'
 import Scene from '@/components/Scene/Scene';
 import { init_orbits } from '@/data/init';
 import { State } from '@/types/types';
-import TLE from '@/components/TLE/TLE';
 import { getOrbit } from '@/api/orbit';
+import BottomMenu from '@/components/Config/BottomMenu';
+import useOrbitStore from '@/store/orbitstore';
+import SceneInterface from '@/components/Scene/SceneInterface';
 
 export default async function Home() {
   // populate initial default orbits
@@ -19,19 +21,16 @@ export default async function Home() {
       data: r,
       map: init_orbits[i].map,
       size: init_orbits[i].size,
-      period: period
-    } 
+      period: period,
+      nu: init_orbits[i].nu
+    }
     initial_data.push(newOrbit)
   }
 
   return (
     <div className="flex h-full min-h-screen w-full flex-col items-center justify-center">
       <Scene initial_data={initial_data}/>
-
-      <div className="flex justify-between w-full h-100">
-        <TLE />
-        <GroundTrack />
-      </div>
+      <SceneInterface />
     </div>
   );
 }

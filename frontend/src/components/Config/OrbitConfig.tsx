@@ -99,7 +99,8 @@ const OrbitConfig = ({setOpen}: {setOpen: React.Dispatch<React.SetStateAction<bo
             state: data,
             trackDraw: false,
             data: r,
-            period: period
+            period: period,
+            nu: 0.001
         }
 
         addOrbit(newOrbit)
@@ -172,28 +173,7 @@ const OrbitConfig = ({setOpen}: {setOpen: React.Dispatch<React.SetStateAction<bo
                     />
                 </button>
                 </form>
-
-            {/* Orbit Modifier - clear, delete */}
             </div>
-
-            {/* Config Bottom Bar */}
-            {/* <div className="flex flex-col h-8 mt-4">
-                <h3 className="text-white-100 font-bold ml-2 text-xl mr-2">Config</h3>
-       
-                <div className="flex flex-row mx-4 mt-3 justify-between">
-                    <button className="btn btn-outline btn-white w-1/3 mr-2 md:w-1/4 lg:w-1/5">
-                        Tracks
-                    </button>
-
-                    <button className="btn w-1/3 btn-outline btn-blue mr-2 md:w-1/4 lg:w-1/5">
-                        Clear
-                    </button>
-
-                    <button className="btn w-1/3 btn-outline mr-2 md:w-1/4 lg:w-1/5">
-                        Elements
-                    </button>
-                </div>
-            </div> */}
         </div>
     )
 }
