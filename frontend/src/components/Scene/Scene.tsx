@@ -9,7 +9,8 @@ import useOrbitStore from '@/store/orbitstore';
 import { Environment, useTexture, Preload } from '@react-three/drei';
 import * as THREE from 'three'
 import { useInView } from 'react-intersection-observer'
-import usePageVisibility from '@/hooks/usePageVisibility';
+import { Stats } from '@react-three/drei'
+
 
 const Orbit = dynamic(() => import('@/scenes/physics/Orbit').then((mod) => mod.Orbit), { 
     ssr: false,
@@ -39,6 +40,8 @@ const EnvironmentConfig = () => {
             <sphereGeometry args={[1, 64, 64]} />
             <meshBasicMaterial map={galaxy} side={THREE.BackSide} />
             </mesh>
+            
+            {/* <Stats/> */}
         </Environment>
     )
 }

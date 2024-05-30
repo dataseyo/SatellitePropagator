@@ -20,37 +20,42 @@ class NumpyArrayEncoder(JSONEncoder):
 def parse_state(data):
     state = data.get("state")
     type = data.get("type")
-    print(state, type)
     if type == "element":
-        # print("getting element with", state)
         sat = Sat(elements=state)
-        period_elem = sat.get_period()
-        period_canonical = handle_units("canonical", "p", period_elem)
-        print("period", period_elem)
-        r, v = sat.evolve_state(period_elem)
+        period = sat.get_period()
+        period_canonical = handle_units("canonical", "p", period)
+        r, v = sat.evolve_state(period)
         r = handle_units("canonical", "r", r)
         v = handle_units("canonical", "v", v)
-        res = {"r": r, "v": v, "period": period_canonical}
+        res = {"r": r, "v": v, "period": period_canonical, "elem": np.round(state, 3)}
         res = json.dumps(res, cls=NumpyArrayEncoder)
         return res
     else:
         sat = Sat(state=state)
         period = sat.get_period()
         period_canonical = handle_units("canonical", "p", period)
-        print("period", period)
         r, v = sat.evolve_state(period)
+        elem = np.round(sat.elements, 3)
         r = handle_units("canonical", "r", r)
         v = handle_units("canonical", "v", v)
-        res = {"r": r, "v": v, "period": period_canonical}
+        res = {"r": r, "v": v, "period": period_canonical, "elem": elem}
         res = json.dumps(res, cls=NumpyArrayEncoder) 
     return res
 
 @app.route("/orbit", methods=["POST"])
 @cross_origin()
 def get_orbit():
-    request_data = request.get_json()
-    data = parse_state(request_data)
-    return jsonify({"state": data})
+    try:
+        request_data = request.get_json()
+        data = parse_state(request_data)
+        return jsonify({"state": data})
+    except Exception as error:
+        return jsonify({"error": error})
+    
+@app.route("/", methods=["GET"])
+@cross_origin()
+def get_celestrak():
+    pass
 
 @app.route("/", methods=["GET"])
 @cross_origin()

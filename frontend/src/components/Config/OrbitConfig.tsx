@@ -89,20 +89,19 @@ const OrbitConfig = ({setOpen}: {setOpen: React.Dispatch<React.SetStateAction<bo
         let data = Object.values(checked ? orbitInput.state : orbitInput.element)
         data = data.map(d => typeof d === 'string' ? parseFloat(d) : d)
         let id = randomBytes(10).toString()
-        
         let integratedData: any = await getOrbit(data, checked ? "state" : "element")
-        const { r, period } = JSON.parse(integratedData.state)
-        
+        const { r, period, elem } = JSON.parse(integratedData.state)
         let newOrbit: State = {
             id: id,
             type: checked ? "state" : "element",
             state: data,
+            elem: elem,
             trackDraw: false,
             data: r,
             period: period,
             nu: 0.001
         }
-
+ 
         addOrbit(newOrbit)
         setTimeout(() => {
             chooseTrack(id)

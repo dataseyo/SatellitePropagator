@@ -11,18 +11,19 @@ export default async function Home() {
   // populate initial default orbits
   const initial_data: State[] = []
   for (let i = 0; i < init_orbits.length; i++) {
-    let res = await getOrbit(init_orbits[i].state, "element")
-    let { r, period } = JSON.parse(res.state)
+    let res = await getOrbit(init_orbits[i].state, init_orbits[i].type)
+    let { r, period, elem } = JSON.parse(res.state)
     let newOrbit: State = {
       id: init_orbits[i].id,
-      type: "element",
+      type: init_orbits[i].type,
       state: init_orbits[i].state,
       trackDraw: init_orbits[i].trackDraw,
       data: r,
       map: init_orbits[i].map,
       size: init_orbits[i].size,
       period: period,
-      nu: init_orbits[i].nu
+      nu: init_orbits[i].nu,
+      elem: elem
     }
     initial_data.push(newOrbit)
   }
