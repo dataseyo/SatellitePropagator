@@ -37,7 +37,6 @@ const Sat = forwardRef( function Sat({state, id, map, period, type, size, data, 
     const satId = `${state[0]} ${state[1]}`
     const rayRef = useRef<THREE.Raycaster>(null)
     const lineRef = useRef<any>(null)
-    // const visible = usePageVisibility()
 
     // set scale and size and speed
     let objSize = .02
@@ -73,7 +72,10 @@ const Sat = forwardRef( function Sat({state, id, map, period, type, size, data, 
     }, [])
 
     // animation loop
-    let spherical = new THREE.Spherical()
+    let spherical = useMemo(() => {
+        return new THREE.Spherical()
+    }, [])
+    
     useFrame((_, delta) => {
         if (path && satRef.current) {
             let p = 1
@@ -162,7 +164,7 @@ export function Orbit() {
     const earthRef = useRef<THREE.Mesh>(null)
     const earthRotation = (((Math.PI * 2) / (60 * 60 * 24)) * 4200) * .1
 
-    useFrame((state, delta) => {
+    useFrame((_, delta) => {
         if (earthRef.current) {
             earthRef.current.rotation.y += delta * earthRotation
         }

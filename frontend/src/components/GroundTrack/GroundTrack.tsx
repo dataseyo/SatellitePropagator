@@ -14,7 +14,7 @@ const GroundTrack = () => {
     let track = useOrbitStore((state) => state.track)
 
     // clip beginning of ground track as it grows larger
-    if (track.length > 17000) {
+    if (track.length > 13000) {
         track.splice(0, 5)
     } 
 

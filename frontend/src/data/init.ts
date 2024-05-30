@@ -13,7 +13,7 @@ export const init_orbits: State[] = [
         id: "2",
         type: "element",
         state: [26600, .74, 64.2851, 137.5555, 271.9172, 21.0476],
-        trackDraw: true,
+        trackDraw: false,
         data: [],
         nu: 0.001
     },
@@ -75,4 +75,13 @@ export const init_orbits: State[] = [
         data: [],
         nu: 0.001
     },
+    {
+        id: "10",
+        type: "state",
+        state: [4971.91, 1279.43, -4452.56, 1.22, 6.79, 3.31],
+        trackDraw: true,
+        data: [],
+        nu: 0.001,
+        texture: "iss"
+    }
 ]

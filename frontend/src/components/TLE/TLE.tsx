@@ -28,46 +28,50 @@ const TLE = () => {
     })
 
     useEffect(() => {
-        if (elements) {
+        if (elements[0] && elements[0].elem) {
             setKep({
-                a: elements[0].state[0],
-                e: elements[0].state[1],
-                i: elements[0].state[2],
-                O: elements[0].state[3],
-                w: elements[0].state[4],
-                T: elements[0].period ? elements[0].period : 0
+                a: elements[0].elem[0],
+                e: elements[0].elem[1],
+                i: elements[0].elem[2],
+                O: elements[0].elem[3],
+                w: elements[0].elem[4],
+                T: elements[0].period ? parseFloat(elements[0].period.toFixed(3)) : 0
+            })
+        } else {
+            setKep({
+                a: 0,
+                e: 0,
+                i: 0,
+                O: 0,
+                w: 0,
+                T: 0
             })
         }
-    }, [elements[0].state])
-
-    const subItems = {
-        closed: {
-            opacity: "0%",
-        },
-        open: {
-            opacity: "100%",
-            translateY: 0,
-            transition: {
-                delay: .35
-            }
-        }
-    }
+    }, [elements[0]])
 
     return (
-        <motion.div 
+        <div 
             className="absolute flex flex-col flex-grow-1 right-2 bottom-0 z-10"
-            // variants={subItems}
-            // initial="closed"
         >
-            <p className="text-white-100">a: {kep.a}</p>
-            <p className="text-white-100">e: {kep.e}</p>
-            <p className="text-white-100">i: {kep.i}</p>
-            <p className="text-white-100">Ω: {kep.O}</p>
-            <p className="text-white-100">ω: {kep.w}</p>
-            
-            {/* to-do: translate this back from canonical to seconds */}
-            {/* <p className="text-white-100">T: {kep.T}</p> */}
-        </motion.div>
+            <table className='table table-xs'>
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody className="text-white-100">
+                    {kep && Object.entries(kep).map((elem, key) => {
+                        return  (
+                            <tr key={key}>
+                                <th>{elem[0]}</th>
+                                <td>{elem[1]}</td>
+                            </tr>
+                        )
+                    })}
+                </tbody>
+            </table>
+        </div>
     )
 }
 

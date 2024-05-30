@@ -1,0 +1,1 @@
+This directory contains problems which motivated this satellite propagator application, as well as protopying and explorations of other areas in astrodynamics which bear on satellite orbits, orbit determination, orbital maneuvers, etc.

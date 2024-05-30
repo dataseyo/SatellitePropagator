@@ -83,10 +83,15 @@ export default function Navbar() {
             <div className="flex h-20 flex-row items-center content-center">
                 {/* mobile */}
                 <div className="flex flex-1 items-center justify-between md:hidden text-white mx-4">
-                    <MenuButton onClick={toggleMobileMenu}>
+                    {/* <MenuButton onClick={toggleMobileMenu}>
                         <IoIosMenu size={35} className="text-white-100"/>
                         <h2 className="text-white-100">Menu</h2>
-                    </MenuButton>
+                    </MenuButton> */}
+                    <Link href="/">
+                        <MenuButton>
+                            <h2 className="text-white-100">Home</h2>
+                        </MenuButton>
+                    </Link>
 
                     <MenuButton onClick={toggleMenu}>
                         <LiaAtomSolid color={"white"} size={35} className=""/>
@@ -102,13 +107,13 @@ export default function Navbar() {
                         </MenuButton>
                     </Link>
 
-                    <Link href="/physics">
+                    {/* <Link href="/physics">
                         <MenuButton>
                             <h2 className="text-white-100">
                                     The Physics
                             </h2> 
                         </MenuButton>
-                    </Link>
+                    </Link> */}
 
                     <MenuButton onClick={toggleMenu}>                        
                         <LiaAtomSolid size={35} className="text-white-100"/>
