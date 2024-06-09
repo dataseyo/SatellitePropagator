@@ -1,7 +1,7 @@
 import numpy as np
 from scipy.integrate import solve_ivp
-import math
-from server.orbital.utils import inverse_kepler, two_body_eom, handle_units, dsin, dcos
+
+from server.orbital.utils import inverse_kepler, two_body_eom, dsin, dcos
 
 '''
 The Sat class takes in either the Keplerian elements or the state vector of a satellite in perifocal coordinates,
@@ -74,7 +74,7 @@ class Sat():
             f = 360 - np.rad2deg(np.arccos(np.dot(e, r) / (e_mag*r_mag)))
         return [a, e_mag, i, O , w, f]
     
-    def elem_to_state(self, type):
+    def elem_to_state(self, type="ECI"):
         '''
         Converts Keplerian orbital elements into a state vector represented in { type } coordinates.
 
@@ -82,7 +82,6 @@ class Sat():
             - PQW (perifocal)
             - ECI (Earth centered inertial)
         '''
-
         # get elements from elements vector
         a = self.elements[0]
         e = self.elements[1]

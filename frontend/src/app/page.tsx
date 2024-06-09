@@ -1,10 +1,7 @@
-import GroundTrack from '../components/GroundTrack/GroundTrack'
 import Scene from '@/components/Scene/Scene';
 import { init_orbits } from '@/data/init';
 import { State } from '@/types/types';
 import { getOrbit } from '@/api/orbit';
-import BottomMenu from '@/components/Config/BottomMenu';
-import useOrbitStore from '@/store/orbitstore';
 import SceneInterface from '@/components/Scene/SceneInterface';
 
 export default async function Home() {
