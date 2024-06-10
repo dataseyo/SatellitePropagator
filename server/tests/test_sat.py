@@ -4,7 +4,7 @@ Note: the tags -rP and -rx will show passed test output and failed test output r
 '''
 import pytest
 import numpy as np
-from orbital.sat import Sat
+from server.orbital.sat import Sat
 
 '''
 Example Keplerian State Vectors 

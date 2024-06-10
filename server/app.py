@@ -1,7 +1,7 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS, cross_origin
 
-from core.parse import parse_state
+from server.core.parse import parse_state
 
 app = Flask(__name__)
 cors = CORS(app)
