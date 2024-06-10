@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import { Toaster } from "react-hot-toast";
 
 import "./globals.css";
 import Navbar from "@/components/Nav/Navbar";
@@ -20,6 +21,9 @@ export default function RootLayout({
     <html lang="en" data-theme="solar">
       <body className={inter.className}>
         <main className="flex flex-col items-center">
+          <Toaster
+            position="top-right"
+          />
           <Navbar/>
           {children}
         </main>

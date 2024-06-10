@@ -9,7 +9,6 @@ import useOrbitStore from '@/store/orbitstore';
 import { Environment, useTexture, Preload } from '@react-three/drei';
 import * as THREE from 'three'
 import { useInView } from 'react-intersection-observer'
-import { Stats } from '@react-three/drei'
 
 
 const Orbit = dynamic(() => import('@/scenes/physics/Orbit').then((mod) => mod.Orbit), { 
@@ -37,11 +36,9 @@ const EnvironmentConfig = () => {
             backgroundRotation={[-Math.PI*2/3, 0, -Math.PI*2/3]}
         >
             <mesh scale={1000}>
-            <sphereGeometry args={[1, 64, 64]} />
-            <meshBasicMaterial map={galaxy} side={THREE.BackSide} />
+                <sphereGeometry args={[1, 64, 64]} />
+                <meshBasicMaterial map={galaxy} side={THREE.BackSide} />
             </mesh>
-            
-            {/* <Stats/> */}
         </Environment>
     )
 }
@@ -59,7 +56,6 @@ export default function Scene({initial_data}: {initial_data: State[]}) {
     }, [])
 
     const { ref, inView } = useInView()
-    // const visible = usePageVisibility()
 
     return (
         <div ref={ref} className="h-screen w-screen z-0">
@@ -80,7 +76,7 @@ export default function Scene({initial_data}: {initial_data: State[]}) {
                     minDistance={2}
                     maxDistance={50}
                 />
-                <Stars count={5000} radius={500}/>
+                {/* <Stars count={5000} radius={500}/> */}
                 <ambientLight intensity={Math.PI / 8}/>
 
                 {/* SCENE */}

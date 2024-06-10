@@ -2,11 +2,13 @@
 import { IoIosAddCircle } from "react-icons/io";
 import { IoInformationCircle } from "react-icons/io5";
 import { FormEvent, useState } from "react";
+import { IoCloseCircle } from "react-icons/io5";
 import { randomBytes } from "crypto";
 
 import useOrbitStore from '@/store/orbitstore'
 import { State } from "@/types/types";
 import { getOrbit } from "@/api/orbit";
+import toast from "react-hot-toast";
 
 const conditionalPlaceholder = (placeOne: string, placeTwo: string) => {
     if (window) {
@@ -89,24 +91,40 @@ const OrbitConfig = ({setOpen}: {setOpen: React.Dispatch<React.SetStateAction<bo
         let data = Object.values(checked ? orbitInput.state : orbitInput.element)
         data = data.map(d => typeof d === 'string' ? parseFloat(d) : d)
         let id = randomBytes(10).toString()
-        let integratedData: any = await getOrbit(data, checked ? "state" : "element")
-        const { r, period, elem } = JSON.parse(integratedData.state)
-        let newOrbit: State = {
-            id: id,
-            type: checked ? "state" : "element",
-            state: data,
-            elem: elem,
-            trackDraw: false,
-            data: r,
-            period: period,
-            nu: 0.001
+        try {
+            let integratedData: any = await getOrbit(data, checked ? "state" : "element")
+            const { r, period, elem } = JSON.parse(integratedData.state)
+            let newOrbit: State = {
+                id: id,
+                type: checked ? "state" : "element",
+                state: data,
+                elem: elem,
+                trackDraw: false,
+                data: r,
+                period: period,
+                nu: 0.001
+            }
+     
+            addOrbit(newOrbit)
+            setTimeout(() => {
+                chooseTrack(id)
+            }, 1)
+            setOpen(false)
+        } catch (error) {
+            toast.error((t) => (
+                <span onClick={() => toast.dismiss(t.id)}>
+                    Failed to propagate.
+                </span>
+                ),
+                {
+                    style: {
+                        borderRadius: '5px',
+                        background: '#333',
+                        color: '#fff'
+                    }
+                }
+            )
         }
- 
-        addOrbit(newOrbit)
-        setTimeout(() => {
-            chooseTrack(id)
-        }, 1)
-        setOpen(false)
     }
     
     return (

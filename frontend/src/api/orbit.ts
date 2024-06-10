@@ -5,7 +5,7 @@ const getOrbit = async (data: number[], type: string) => {
         headers: {
             "Content-Type": "application/json"
         },
-        cache: "no-cache"
+        // cache: "no-cache"
     })
 
     if (!res.ok) {

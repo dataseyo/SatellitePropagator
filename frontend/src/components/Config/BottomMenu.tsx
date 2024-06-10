@@ -1,10 +1,8 @@
 "use client"
 
-import { MdGpsFixed } from "react-icons/md";
 import { FaTrash } from "react-icons/fa";
 import { BsClipboardData } from "react-icons/bs";
 import { CgMenuGridO } from "react-icons/cg";
-import { IoSettingsOutline } from "react-icons/io5";
 import { FaRegMap } from "react-icons/fa6";
 import { AnimatePresence, motion } from 'framer-motion'
 import { useState } from "react";
