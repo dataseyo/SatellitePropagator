@@ -1,5 +1,6 @@
 from json import JSONEncoder
 import json
+import numpy as np
 
 from server.orbital.sat import Sat
 from server.orbital.utils import handle_units
